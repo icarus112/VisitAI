@@ -2,6 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, Router
 from aiogram.client.session.aiohttp import AiohttpSession
 
+from database.async_engine import async_session
 from app.core.middlewares import AppMiddleware
 from app.core.routers import router
 from conf import BOT_TOKEN, BOT_PROXY
@@ -23,8 +24,8 @@ async def main():
     logging.basicConfig(level=logging.DEBUG)
 
     # middleware
-    dp.message.middleware(AppMiddleware())
-    dp.callback_query.middleware(AppMiddleware())
+    dp.message.outer_middleware(AppMiddleware(async_session))
+    dp.callback_query.outer_middleware(AppMiddleware(async_session))
 
     #собраны все роутеры
     dp.include_router(router)

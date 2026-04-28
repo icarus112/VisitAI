@@ -7,3 +7,8 @@ main = ReplyKeyboardMarkup(keyboard=[
     KeyboardButton(text="🎛️Другое")]],
     resize_keyboard=True,
     input_field_placeholder="Выберите пункт меню...")
+
+admin = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text="✏️ Создать услугу")],
+    [KeyboardButton(text="🪪 Добавить администратора")]
+])
