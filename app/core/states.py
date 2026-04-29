@@ -6,3 +6,8 @@ class RecordState(StatesGroup):
 
 class AdminState(StatesGroup):
     get_id = State()
+
+class CatalogSetState(StatesGroup):
+    get_name = State()
+    get_price = State()
+    create = State()

@@ -17,7 +17,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, nullable=False)
     tg_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    phone: Mapped[str] = mapped_column(String(12), nullable=False)
+    phone: Mapped[str] = mapped_column(String(15), default="-")
 
     bookings = relationship(
         "Booking", back_populates="users"
