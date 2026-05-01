@@ -29,3 +29,9 @@ class CatalogCreate(BaseModel):
             raise ValueError("name can't be empty")
 
         return v
+
+class CatalogResponse(BaseModel):
+    id: int
+    name: str
+    price: Decimal
+    duration: int
