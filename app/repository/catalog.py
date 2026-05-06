@@ -36,7 +36,7 @@ class CatalogRepos:
         catalogs = results.scalars().all()
         return catalogs
 
-    async def get_by_id(self, id: int) -> Catalog:
+    async def get_ct_by_id(self, id: int) -> Catalog:
         stmt = (select(Catalog)
                 .where(Catalog.id == id))
 

@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import select
 
 from database.models import Admin
@@ -33,6 +35,12 @@ class AdminRepos:
         )
 
         self.session.add(admin)
+
+    async def get_all_admin(self) -> List[Admin]:
+        stmt = (select(Admin).order_by(Admin.id))
+        results = await self.session.execute(stmt)
+        admins = results.scalars().all()
+        return admins
 
     async def change_role(self, tg_id: int, new_role: str):
         admin = await self.get_ad_by_id(tg_id)

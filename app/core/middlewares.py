@@ -36,7 +36,7 @@ class AppMiddleware(BaseMiddleware):
                 data["us_sv"] = UserService(us_rp)
                 data["ad_sv"] = AdminService(ad_rp)
                 data["ct_sv"] = CatalogService(ct_rp)
-                data["bk_sv"] = BookingService(bk_rp)
+                data["bk_sv"] = BookingService(bk_rp, us_rp, ct_rp)
 
                 result = await handler(event, data)
                 await session.commit()

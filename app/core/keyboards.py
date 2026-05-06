@@ -26,6 +26,11 @@ get_date = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="🗓️ В другой день", callback_data="another_day")]
 ])
 
+write_comment = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="✅ Да, написать", callback_data="with_comment")],
+    [InlineKeyboardButton(text="❌ Без комментариев", callback_data="without_comment")]
+])
+
 get_number = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="📱 Отправить номер", request_contact=True)],
@@ -48,3 +53,14 @@ def catalog_keyboard(catalogs):
         ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def admin_booking(booking_id: int):
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text="✅ Принять",
+            callback_data=f"bk_accept:{booking_id}"
+        ),
+        InlineKeyboardButton(
+            text="❌ Отклонить",
+            callback_data=f"bk_reject:{booking_id}")
+    ]])

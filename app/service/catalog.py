@@ -52,6 +52,11 @@ class CatalogService:
 
         return catalogs
 
+    async def get_ct_by_id(self, ct_id: int) -> Catalog:
+        selected = await self.ct_rp.get_ct_by_id(ct_id)
+
+        return selected
+
 # async def prog():
 #     async with async_session() as session:
 #         ct_rp = CatalogRepos(session)

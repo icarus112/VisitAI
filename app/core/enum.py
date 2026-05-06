@@ -5,6 +5,7 @@ class BookStatus(Enum):
     PENDING = "PENDING"
     PAID = "PAID"
     CANCELLED = "CANCELLED"
+    UNPAID = "UNPAID"
 
 class Role(StrEnum):
     SUPER_ADMIN = "SUPER_ADMIN"

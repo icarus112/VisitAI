@@ -1,3 +1,5 @@
+from typing import List
+
 from aiogram.types import Message
 
 from app.core.enum import Role
@@ -44,3 +46,7 @@ class AdminService:
                                      new_role=role.value)
 
         return role
+
+    async def get_all_admin(self) -> list[Admin]:
+        admins = await self.ad_rp.get_all_admin()
+        return admins

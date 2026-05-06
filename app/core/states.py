@@ -17,3 +17,5 @@ class CatalogSetState(StatesGroup):
 class Requests(StatesGroup):
     get_date = State()
     get_hour = State()
+    get_comment = State()
+    create_request = State()

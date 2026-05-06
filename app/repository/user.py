@@ -26,3 +26,11 @@ class UserRepos:
 
         return user
 
+    async def get_user_by_id(self, user_id) -> User|None:
+        stmt = (select(User)
+                .where(User.id == user_id))
+
+        result = await self.session.execute(stmt)
+        user = result.scalar_one_or_none()
+        return user
+

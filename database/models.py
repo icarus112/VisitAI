@@ -51,8 +51,8 @@ class Booking(Base):
     catalog_id: Mapped[int] = mapped_column(ForeignKey("catalogs.id"), nullable=False)
     date: Mapped[date] = mapped_column(Date ,nullable=False)
     time: Mapped[time] = mapped_column(Time, nullable=False)
-    status:Mapped[enum.BookStatus] = mapped_column(Enum(BookStatus), default= enum.BookStatus.PENDING, nullable=False)
-
+    status: Mapped[enum.BookStatus] = mapped_column(Enum(BookStatus), default= enum.BookStatus.PENDING, nullable=False)
+    comment: Mapped[str] = mapped_column(String(200))
     users = relationship(
         "User", back_populates="bookings")
 
