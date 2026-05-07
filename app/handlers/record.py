@@ -49,7 +49,6 @@ async def ct_select(callback: CallbackQuery,
                     ct_sv: CatalogService,
                     state: FSMContext):
     ct_id = int(callback.data.split(":")[1].strip())
-    cts = await ct_sv.get_all()
 
     await callback.answer()
 
@@ -66,6 +65,7 @@ async def ct_select(callback: CallbackQuery,
         await state.set_state(Requests.get_date)
     else:
         await callback.message.edit_text("Услуга не найдена")
+        await state.clear()
 
 @router.callback_query(F.data == "today", Requests.get_date)
 async def request_today(callback: CallbackQuery,
@@ -87,6 +87,7 @@ async def request_time(message: Message,
         time_obj = message.text.strip()
     except Exception:
         await message.answer("что то пошло не так при вводе времени")
+        await state.clear()
         return
 
     await state.update_data(time=time_obj)
@@ -109,7 +110,7 @@ async def create_request(message: Message,
                          bot: Bot,
                          bk_sv: BookingService,
                          ad_sv: AdminService):
-    comment = message.text.strip() if message.text else ""
+    comment = message.text.strip() if message.text else " "
 
     data = await state.get_data()
     user_tg_id = data.get("user_tg_id")
@@ -119,6 +120,7 @@ async def create_request(message: Message,
 
     if not user_tg_id or not ct_id or not time_str or not date_str:
         await message.answer("Не хватает данных для создания заявки")
+        await state.clear()
         return
 
     try:
@@ -133,6 +135,7 @@ async def create_request(message: Message,
 
     except Exception as e:
         await message.answer("Ошибка при создании заявки")
+        await state.clear()
         print(e)
         return
 
@@ -155,6 +158,7 @@ async def create_request(message: Message,
     except Exception as e:
         await message.answer("Ошибка при получении выборки администраторов")
         print(e)
+        await state.clear()
         return
 
     for admin in admins:

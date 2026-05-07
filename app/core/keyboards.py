@@ -1,7 +1,7 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
     InlineKeyboardMarkup, InlineKeyboardButton)
 
-from database.models import Catalog
+from database.models import Catalog, Admin
 
 main = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="👤Мои записи")],
@@ -13,7 +13,13 @@ main = ReplyKeyboardMarkup(keyboard=[
 
 admin = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="✏️ Создать услугу")],
-    [KeyboardButton(text="🪪 Добавить администратора")]
+    [KeyboardButton(text="🪪 Сотрудники")]
+])
+
+super_panel =ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text="🪪 Добавить администратора"),
+     KeyboardButton(text="Удалить администратора")],
+    [KeyboardButton(text="📃 Список работников")]
 ])
 
 authorization = InlineKeyboardMarkup(inline_keyboard=[
@@ -53,6 +59,20 @@ def catalog_keyboard(catalogs):
         ])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def admins_keyboard(admins):
+    buttons = []
+    for admin in admins:
+        text = f"{admin.name}\n{admin.tg_id}"
+        buttons.append([
+            InlineKeyboardButton(
+                text=text,
+                callback_data=f"admin: {admin.id}"
+            )
+        ])
+
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
 
 def admin_booking(booking_id: int):
     return InlineKeyboardMarkup(inline_keyboard=[

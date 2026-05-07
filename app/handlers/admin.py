@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.dispatcher.middlewares import data
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from app.core import keyboards as kb
 from app.core.states import AdminState, CatalogSetState
@@ -16,6 +16,14 @@ router = Router()
 async def admin_panel(message: Message):
     await message.answer("✅ Доступ открыт", reply_markup=kb.admin)
 
+@router.message(F.text == "🪪 Сотрудники", IsSuperAdmin())
+async def super_admin_panel(message: Message):
+    await message.answer("✅ Доступ открыт", reply_markup=kb.super_panel)
+
+@router.message(F.text == "📃 Список работников", IsSuperAdmin())
+async def list_admin(message: Message, ad_sv: AdminService):
+    admins = await ad_sv.get_info()
+    await message.answer(admins, parse_mode="HTML")
 
 @router.message(F.text == "🪪 Добавить администратора", IsSuperAdmin())
 async def get_admin_id(message: Message, state: FSMContext):
@@ -27,27 +35,48 @@ async def get_admin_id(message: Message, state: FSMContext):
     await state.set_state(AdminState.get_id)
 
 @router.message(AdminState.get_id, IsSuperAdmin())
-async def set_admin(message: Message,
+async def get_tg_id_for_admin(message: Message,
                     state: FSMContext,
                     ad_sv: AdminService):
     if not message.text.isdigit():
         await message.answer("ID должно быть числом и без знаков")
+        await state.clear()
         return
 
     tg_id = int(message.text)
 
-    admin = await ad_sv.get_ad_by_id(tg_id)
+    admin = await ad_sv.get_ad_by_tg_id(tg_id)
     if not admin:
-        ok = await ad_sv.set_admin(tg_id)
-        if not ok:
-            await message.answer("произошла ошибка! повторите попытку")
-            return
+        await state.update_data(tg_id=tg_id)
+        await message.answer("Дайте пожалуйста имя для вашего работника:")
+        await state.set_state(AdminState.get_name)
 
+    else:
+        await message.answer("!Админ с таким id уже существует")
+        await state.clear()
+
+@router.message(AdminState.get_name, IsSuperAdmin())
+async def set_admin(message: Message,
+                    state: FSMContext,
+                    ad_sv: AdminService):
+    name = message.text.strip() if message.text else " "
+    data = await state.get_data()
+    tg_id = data.get("tg_id")
+    try:
+        ok = await ad_sv.set_admin(name=name, tg_id=tg_id)
+    except Exception as e:
+        await message.answer("Что-то пошло не так при попытке передать данные в систему")
+        print(e)
+        await state.clear()
+
+    if ok:
         await message.answer("✅ Админ добавлен")
         await state.clear()
         return
+    else:
+        await message.answer("произошла ошибка при вводе сотрудника в сиситему")
+        await state.clear()
 
-    await message.answer("!Админ с таким id уже существует")
 
 @router.message(F.text == "✏️ Создать услугу", IsAdmin())
 async def set_catalog(message: Message, state: FSMContext):
@@ -72,6 +101,7 @@ async def get_price(message: Message, state: FSMContext):
         price_obj = message.text.strip()
     except Exception:
         await message.answer("что то пошло не такпри вводе цены")
+        await state.clear()
         return
 
     await state.update_data(price=price_obj)
@@ -90,6 +120,7 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
         catalog = await ct_sv.create_ct(name, price, duration)
     except Exception as e:
         await message.answer(f"❌ {e}\n\n что то пошло не так при вводе данных")
+        await state.clear()
         return
 
 
@@ -99,3 +130,42 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
                          f"цена: {catalog.price} руб\n"
                          f"продолжительность: {catalog.duration} мин")
     await state.clear()
+
+@router.message(F.text == "Удалить администратора", IsSuperAdmin())
+async def try_delete_admin(message: Message,
+                           ad_sv: AdminService):
+    try:
+        admins = await ad_sv.get_all_admin()
+    except Exception as e:
+        await message.answer("Ошибка при получении списка сотрудников")
+        print(e)
+        return
+
+    await message.answer("выберите администатора которого хотите убрать:",
+                         reply_markup=kb.admins_keyboard(admins))
+
+@router.callback_query(F.data.startswith("admin:"), IsSuperAdmin())
+async def delete_admin(callback: CallbackQuery, ad_sv: AdminService):
+    await callback.answer()
+
+    admin_id = int(callback.data.split(":")[1].strip())
+
+    selected =await ad_sv.get_ad_by_id(admin_id)
+    if selected is None:
+        await callback.message.answer("не получилось найти такого сотрудника")
+        return
+    else:
+        await callback.message.answer(f"Вы выбрали:\nname:{selected.name}\ntg_id:{selected.tg_id}")
+
+        try:
+            ok = await ad_sv.remove_admin_by_id(admin_id)
+        except Exception as e:
+            await callback.message.answer("произошла ошибка при попытки удалении сотрудника")
+            print(e)
+            return
+
+        if ok:
+            await callback.message.answer("Сотрудник успешно удален", reply_markup=kb.admin)
+        else:
+            await callback.message.answer("Не получилось удалить сотрудника")
+

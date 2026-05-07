@@ -53,8 +53,9 @@ class CatalogRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class BookingRead(BaseModel):
+    id: int
     user_id: int
-    ct_id: int
+    catalog_id: int
     date: datetime.date
     time: datetime.time
     status: BookStatus

@@ -12,7 +12,7 @@ class IsSuperAdmin(BaseFilter):
         tg_id = message.from_user.id
 
         if DEV_MODE:
-            admin = await ad_sv.get_ad_by_id(tg_id)
+            admin = await ad_sv.get_ad_by_tg_id(tg_id)
 
             if not admin:
                 await message.answer("⛔ У тебя нет роли как админ")
@@ -30,7 +30,7 @@ class IsAdmin(BaseFilter):
     async def __call__(self, message: Message, ad_sv: AdminService) -> bool:
         # print("AD_RP =", ad_rp)
         tg_id = message.from_user.id
-        admin = await ad_sv.get_ad_by_id(tg_id)
+        admin = await ad_sv.get_ad_by_tg_id(tg_id)
 
         if DEV_MODE:
 

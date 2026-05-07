@@ -49,7 +49,7 @@ class BookingService:
         new_booking = await self.bk_rp.create_booking(booking)
 
         return BookingRequestResult(
-            booking=booking,
+            booking=new_booking,
             user=user,
             ct=ct,
             comment=comment

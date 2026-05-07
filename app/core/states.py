@@ -8,6 +8,7 @@ class CreateUserState(StatesGroup):
 
 class AdminState(StatesGroup):
     get_id = State()
+    get_name = State()
 
 class CatalogSetState(StatesGroup):
     get_name = State()
