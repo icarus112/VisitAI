@@ -16,6 +16,11 @@ router = Router()
 async def admin_panel(message: Message):
     await message.answer("✅ Доступ открыт", reply_markup=kb.admin)
 
+@router.message(Command("mytgid"), IsAdmin())
+async def get_tg_id(message: Message):
+    await message.answer(f"Ваш тг id:")
+    await message.answer(f"{message.from_user.id}", reply_markup=kb.admin)
+
 @router.message(F.text == "🪪 Сотрудники", IsSuperAdmin())
 async def super_admin_panel(message: Message):
     await message.answer("✅ Доступ открыт", reply_markup=kb.super_panel)
@@ -29,8 +34,8 @@ async def list_admin(message: Message, ad_sv: AdminService):
 async def get_admin_id(message: Message, state: FSMContext):
     await message.answer("введите пожалуйста ID будущего сотрудника: ")
     await message.answer("если не знаете как получить свой id "
-                         "зайдите в поисковую строку и введите @getmyid_bot"
-                         "\nдальше нажмите на Start или введите /start"
+                         "напишите мне с устройства которого нужно опознать Tg ID"
+                         " /mytgid"
                          "\n\nтаким образом вы должны получить свой tg id")
     await state.set_state(AdminState.get_id)
 
@@ -100,7 +105,7 @@ async def get_price(message: Message, state: FSMContext):
     try:
         price_obj = message.text.strip()
     except Exception:
-        await message.answer("что то пошло не такпри вводе цены")
+        await message.answer("что то пошло не такпри вводе цены", reply_markup=kb.admin)
         await state.clear()
         return
 
@@ -119,7 +124,7 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
     try:
         catalog = await ct_sv.create_ct(name, price, duration)
     except Exception as e:
-        await message.answer(f"❌ {e}\n\n что то пошло не так при вводе данных")
+        await message.answer(f"❌ {e}\n\n что то пошло не так при вводе данных", reply_markup=kb.admin)
         await state.clear()
         return
 
@@ -128,7 +133,7 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
                          f"id: {catalog.id}\n"
                          f"название: {catalog.name}\n"
                          f"цена: {catalog.price} руб\n"
-                         f"продолжительность: {catalog.duration} мин")
+                         f"продолжительность: {catalog.duration} мин", reply_markup=kb.admin)
     await state.clear()
 
 @router.message(F.text == "Удалить администратора", IsSuperAdmin())
@@ -152,7 +157,7 @@ async def delete_admin(callback: CallbackQuery, ad_sv: AdminService):
 
     selected =await ad_sv.get_ad_by_id(admin_id)
     if selected is None:
-        await callback.message.answer("не получилось найти такого сотрудника")
+        await callback.message.answer("не получилось найти такого сотрудника", reply_markup=kb.admin)
         return
     else:
         await callback.message.answer(f"Вы выбрали:\nname:{selected.name}\ntg_id:{selected.tg_id}")
@@ -167,5 +172,5 @@ async def delete_admin(callback: CallbackQuery, ad_sv: AdminService):
         if ok:
             await callback.message.answer("Сотрудник успешно удален", reply_markup=kb.admin)
         else:
-            await callback.message.answer("Не получилось удалить сотрудника")
+            await callback.message.answer("Не получилось удалить сотрудника", reply_markup=kb.admin)
 

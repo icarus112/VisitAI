@@ -1,4 +1,7 @@
+import datetime
+
 from aiogram import Router, F, Bot
+from aiogram.client import bot
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -11,7 +14,8 @@ from app.service.catalog import CatalogService
 from app.service.user import UserService
 
 router = Router()
-
+#проверить ввод даты
+#проверить без комента
 '''
 ========================================================================================
                                      ДОБАВИТЬ ЗАПИСЬ
@@ -62,12 +66,12 @@ async def ct_select(callback: CallbackQuery,
 
         await state.update_data(user_tg_id=callback.from_user.id)
         await state.update_data(ct_id=selected.id)
-        await state.set_state(Requests.get_date)
+        await state.set_state(Requests.ask_date)
     else:
         await callback.message.edit_text("Услуга не найдена")
         await state.clear()
 
-@router.callback_query(F.data == "today", Requests.get_date)
+@router.callback_query(F.data == "today", Requests.ask_date)
 async def request_today(callback: CallbackQuery,
                         state: FSMContext,
                         bk_sv: BookingService):
@@ -79,6 +83,34 @@ async def request_today(callback: CallbackQuery,
                                      "в ближайщее время")
     await callback.message.answer("Прошу введите время например (12:30 или 17 00)")
     await state.set_state(Requests.get_hour)
+
+@router.callback_query(F.data == "another_day", Requests.ask_date)
+async def request_another_day(callback: CallbackQuery,
+                              state: FSMContext):
+
+    await callback.message.edit_text("Хорошо прошу введите дату на которую хотите записатся\n"
+                                     "(например 12 или 12.09 или 12.09.2026)")
+    await state.set_state(Requests.get_date)
+
+@router.message(Requests.get_date)
+async def request_get_date(message: Message,
+                           state: FSMContext,
+                           bk_sv: BookingService,
+                           date: datetime.date):
+    try:
+        date_obj = message.text.strip()
+        date_obj = bk_sv.parse_date(date_obj)
+    except Exception as e:
+        await message.answer("что то пошло не так при вводе даты")
+        print(e)
+        await state.clear()
+        return
+
+    await state.update_data(date=date_obj)
+    await message.answer(f"отлично вы ввели: {date_obj.strftime('%d.%m.%Y')}")
+    await message.answer("Прошу введите время например (12:30 или 17 00)")
+    await state.set_state(Requests.get_hour)
+
 
 @router.message(Requests.get_hour)
 async def request_time(message: Message,
@@ -96,11 +128,29 @@ async def request_time(message: Message,
                          reply_markup=kb.write_comment)
     await state.set_state(Requests.get_comment)
 
+@router.callback_query(F.data == "without_comment", Requests.get_comment)
+async def request_without_comment(callback: CallbackQuery,
+                                  bot: Bot,
+                                  bk_sv: BookingService,
+                                  ad_sv: AdminService,
+                                  state: FSMContext):
+    ok, text = await send_booking_request(
+        state=state,
+        bot=bot,
+        bk_sv=bk_sv,
+        ad_sv=ad_sv,
+        comment="-"
+    )
+
+    await callback.message.edit_text(text)
+    await callback.answer()
+    await state.clear()
+
 
 @router.callback_query(F.data == "with_comment", Requests.get_comment)
 async def request_comment(callback: CallbackQuery,
                           state: FSMContext):
-    await callback.message.answer("Хорошо прошу напишите ниже в одном сообщении"
+    await callback.message.edit_text("Хорошо прошу напишите ниже в одном сообщении"
                                  " то что хотите передать администратору:")
     await state.set_state(Requests.create_request)
 
@@ -110,8 +160,26 @@ async def create_request(message: Message,
                          bot: Bot,
                          bk_sv: BookingService,
                          ad_sv: AdminService):
-    comment = message.text.strip() if message.text else " "
+    comment = message.text.strip() if message.text else "-"
 
+    ok, text = await send_booking_request(
+        state=state,
+        bot=bot,
+        bk_sv=bk_sv,
+        ad_sv=ad_sv,
+        comment=comment
+    )
+
+    await message.answer(text)
+    await state.clear()
+
+async def send_booking_request(
+    state: FSMContext,
+    bot: Bot,
+    bk_sv: BookingService,
+    ad_sv: AdminService,
+    comment: str
+):
     data = await state.get_data()
     user_tg_id = data.get("user_tg_id")
     ct_id = data.get("ct_id")
@@ -119,9 +187,8 @@ async def create_request(message: Message,
     date_str = data.get("date")
 
     if not user_tg_id or not ct_id or not time_str or not date_str:
-        await message.answer("Не хватает данных для создания заявки")
-        await state.clear()
-        return
+        return False, "Не хватает данных для создания заявки"
+
 
     try:
 
@@ -134,10 +201,8 @@ async def create_request(message: Message,
         )
 
     except Exception as e:
-        await message.answer("Ошибка при создании заявки")
-        await state.clear()
         print(e)
-        return
+        return False, "Ошибка при создании заявки"
 
     booking = result.booking
     user = result.user
@@ -156,37 +221,35 @@ async def create_request(message: Message,
     try:
         admins = await ad_sv.get_all_admin()
     except Exception as e:
-        await message.answer("Ошибка при получении выборки администраторов")
         print(e)
-        await state.clear()
-        return
+        return False, "Ошибка при получении выборки администраторов"
+
 
     for admin in admins:
         await bot.send_message(
-            chat_id = admin.tg_id,
+            chat_id=admin.tg_id,
             text=text,
             reply_markup=kb.admin_booking(booking.id)
         )
 
-    await message.answer("✅ Заявка создана и отправлена администратору")
-    await state.clear()
+    return True, "Заявка отправлена администратору"
+'''
+========================================================================================
+                                     После добавления
+========================================================================================
+'''
+@router.callback_query(F.data.startswith("bk_accept:"))
+async def accept_booking(
+        callback: CallbackQuery,
+        bot: Bot,
+        bk_sv: BookingService):
+    booking_id = int(callback.data.split(":")[1])
 
+    booking = await bk_sv.get_booking(booking_id)
 
+    if not booking:
+        await callback.answer("Заявка не найдена")
+        return
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    await callback.answer("Желаете ли вы оплатить запись онлайн сейчас?", reply_markup=kb.ask_pay)
 

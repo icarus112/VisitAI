@@ -37,6 +37,11 @@ write_comment = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="❌ Без комментариев", callback_data="without_comment")]
 ])
 
+ask_pay = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="✅ Да, оплатить сейчас", callback_data="accept_pay")],
+    [InlineKeyboardButton(text="❌ Оплатить на месте", callback_data="without_pay")]
+])
+
 get_number = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="📱 Отправить номер", request_contact=True)],
@@ -81,6 +86,6 @@ def admin_booking(booking_id: int):
             callback_data=f"bk_accept:{booking_id}"
         ),
         InlineKeyboardButton(
-            text="❌ Отклонить",
+            text="❌ Написать клиенту",
             callback_data=f"bk_reject:{booking_id}")
     ]])

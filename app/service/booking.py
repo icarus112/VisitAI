@@ -32,7 +32,7 @@ class BookingService:
         if isinstance(date_str, datetime.date):
             booking_date = date_str
         elif isinstance(date_str, str):
-            booking_date = self._parse_date(date_str)
+            booking_date = self.parse_date(date_str)
         else:
             raise ValueError("Неверный тип даты в sv")
         parsed_time = self._parse_time(time_str)
@@ -55,7 +55,7 @@ class BookingService:
             comment=comment
         )
 
-    def _parse_date(self, date_str: str) -> datetime.date:
+    def parse_date(self, date_str: str) -> datetime.date:
         wd = date_str.split(".")
         wd = [el for el in wd if el != ""]
 
