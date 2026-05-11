@@ -44,3 +44,12 @@ class CatalogRepos:
         catalog = result.scalar_one_or_none()
         return catalog
 
+    async def find_by_name(self, query: str) -> Catalog:
+        stmt = (select(Catalog)
+                .where(Catalog.name.ilike( f"%{query}%"))
+                )
+        result = await self.session.execute(stmt)
+        catalog = result.scalar_one_or_none()
+
+        return catalog
+

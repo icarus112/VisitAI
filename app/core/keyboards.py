@@ -80,12 +80,23 @@ def admins_keyboard(admins):
 
 
 def admin_booking(booking_id: int):
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(
-            text="✅ Принять",
-            callback_data=f"bk_accept:{booking_id}"
-        ),
-        InlineKeyboardButton(
-            text="❌ Написать клиенту",
-            callback_data=f"bk_reject:{booking_id}")
-    ]])
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Принять",
+                    callback_data=f"bk_accept:{booking_id}"
+                ),
+                InlineKeyboardButton(
+                    text="❌ Написать клиенту",
+                    callback_data=f"bk_reject:{booking_id}"
+                )
+            ]
+        ]
+    )
+
+confirm_ai = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm_ai_booking"),
+    InlineKeyboardButton(text="❌ Отмена", callback_data="cancel_ai_booking")
+    ]
+])

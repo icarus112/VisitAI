@@ -57,6 +57,9 @@ class CatalogService:
 
         return selected
 
+    async def find_by_name(self, query: str) -> Catalog:
+        return await self.ct_rp.find_by_name(query)
+
 # async def prog():
 #     async with async_session() as session:
 #         ct_rp = CatalogRepos(session)

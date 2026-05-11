@@ -1,5 +1,6 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 
+from app.core.enum import BookStatus
 from app.shemas.record import BookingCreate
 from database.models import Booking
 
@@ -24,3 +25,12 @@ class BookingRepos:
         booking = result.scalar_one_or_none()
 
         return booking
+
+    async def cancel_pay(self, booking_id: int):
+        stmt = (update(Booking)
+                .where(Booking.id == booking_id)
+                .values(status=BookStatus.CANCELLED))
+
+        result = await self.session.execute(stmt)
+
+        return result.rowcount

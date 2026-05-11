@@ -1,8 +1,9 @@
 from typing import Dict, Any, Callable
 from aiogram.types import TelegramObject
 from aiogram import BaseMiddleware
-from fastapi import FastAPI
 
+from app.service.ai_intent import AIIntentService
+from conf import AI_API
 from app.repository.admin import AdminRepos
 from app.repository.booking import BookingRepos
 from app.repository.catalog import CatalogRepos
@@ -11,7 +12,6 @@ from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
 from app.service.user import UserService
-from database.async_engine import async_session
 
 # создание сессии, и дать доступ к нему классам которые написаны ниже
 class AppMiddleware(BaseMiddleware):
@@ -37,6 +37,9 @@ class AppMiddleware(BaseMiddleware):
                 data["ad_sv"] = AdminService(ad_rp)
                 data["ct_sv"] = CatalogService(ct_rp)
                 data["bk_sv"] = BookingService(bk_rp, us_rp, ct_rp)
+                data["ai_sv"] = AIIntentService(
+                    api_key=AI_API
+                )
 
                 result = await handler(event, data)
                 await session.commit()
@@ -44,15 +47,3 @@ class AppMiddleware(BaseMiddleware):
             except Exception:
                 await session.rollback()
                 raise
-
-# class RepoMiddleware(BaseMiddleware):
-#     def __init__(self, session_pool):
-#         self.session_pool = session_pool
-#
-#     async def __call__(self, handler: Callable,
-#                        event: TelegramObject,
-#                        data: Dict[str, Any]):
-#         async with self.session_pool() as session:
-#             data["session"] = session
-#             data["ad_rp"] = AdminRepos(session)
-#             return await handler(event, data)

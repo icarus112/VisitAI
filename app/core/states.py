@@ -16,8 +16,17 @@ class CatalogSetState(StatesGroup):
     create = State()
 
 class Requests(StatesGroup):
+    choose_ct = State()
     ask_date = State()
     get_date = State()
     get_hour = State()
     get_comment = State()
     create_request = State()
+
+#===============================================================
+
+class AiUserState(StatesGroup):
+    chatting = State()
+
+class AiAdminState(StatesGroup):
+    chatting = State()

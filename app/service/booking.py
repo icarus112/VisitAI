@@ -87,10 +87,19 @@ class BookingService:
     async def get_booking(self, booking_id: int) -> Booking:
         try:
             booking = await self.bk_rp.get_booking(booking_id)
-        except ValueError:
-            raise ValueError("Не удалось получить booking by id в sv")
+        except ValueError as exc:
+            raise ValueError(
+                f"Failed to get Booking in service: booking_id={booking_id}"
+            ) from exc
 
         return booking
+
+    async def cancel_pay(self, booking_id: int):
+        ok = await self.bk_rp.get_booking(booking_id)
+        if ok:
+            await self.bk_rp.cancel_pay(booking_id)
+        else:
+            raise ValueError("Что то пошло не так при закрытии оплаты в тип Cancelled")
 
 
 

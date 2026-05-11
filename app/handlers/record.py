@@ -26,6 +26,8 @@ router = Router()
 async def add_record(message: Message, state: FSMContext,
                      us_sv: UserService, ct_sv: CatalogService):
 
+    await state.clear()
+
     user = await us_sv.get_by_tg_id(message.from_user.id)
     if not user:
         #  у юзера может не быть юзернейма
@@ -38,6 +40,7 @@ async def add_record(message: Message, state: FSMContext,
         await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/user.py
         return
 
+    await state.set_state(Requests.choose_ct)
     await show_catalogs(message, ct_sv)
 
 async def show_catalogs(message: Message, ct_sv: CatalogService):
@@ -48,7 +51,7 @@ async def show_catalogs(message: Message, ct_sv: CatalogService):
         reply_markup=kb.catalog_keyboard(catalogs)
     )
 
-@router.callback_query(F.data.startswith("catalog:"))
+@router.callback_query(Requests.choose_ct, F.data.startswith("catalog:"))
 async def ct_select(callback: CallbackQuery,
                     ct_sv: CatalogService,
                     state: FSMContext):
@@ -95,8 +98,7 @@ async def request_another_day(callback: CallbackQuery,
 @router.message(Requests.get_date)
 async def request_get_date(message: Message,
                            state: FSMContext,
-                           bk_sv: BookingService,
-                           date: datetime.date):
+                           bk_sv: BookingService):
     try:
         date_obj = message.text.strip()
         date_obj = bk_sv.parse_date(date_obj)
@@ -241,15 +243,45 @@ async def send_booking_request(
 @router.callback_query(F.data.startswith("bk_accept:"))
 async def accept_booking(
         callback: CallbackQuery,
-        bot: Bot,
-        bk_sv: BookingService):
+        bk_sv: BookingService,
+        state: FSMContext):
     booking_id = int(callback.data.split(":")[1])
 
     booking = await bk_sv.get_booking(booking_id)
 
+    await callback.message.edit_reply_markup(reply_markup=None)
+
     if not booking:
-        await callback.answer("Заявка не найдена")
+        await callback.message.answer("Заявка не найдена")
         return
 
-    await callback.answer("Желаете ли вы оплатить запись онлайн сейчас?", reply_markup=kb.ask_pay)
+    await state.update_data(booking_id=booking_id)
+
+    await callback.message.answer("Желаете ли вы оплатить запись онлайн сейчас?", reply_markup=kb.ask_pay)
+
+@router.callback_query(F.data == "without_pay")
+async def without_pay(callback: CallbackQuery,
+                      bk_sv: BookingService,
+                      state: FSMContext):
+    data = await state.get_data()
+    booking_id = data.get("booking_id")
+
+
+    if booking_id is None:
+        await callback.message.answer("Ошибка: booking_id не найден", reply_markup=kb.main)
+        return
+
+    try:
+        await bk_sv.cancel_pay(booking_id)
+    except Exception as e:
+        await callback.message.edit_text("что то пошло не так в хендлере")
+        await callback.message.answer("Главное меню", reply_markup=kb.main)
+        print(e)
+        return
+
+    await callback.message.edit_text("Отлично) Будем ждать вас")
+    await callback.message.answer("Главное меню", reply_markup=kb.main)
+
+
+
 

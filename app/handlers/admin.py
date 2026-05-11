@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from app.core import keyboards as kb
-from app.core.states import AdminState, CatalogSetState
+from app.core.states import AdminState, CatalogSetState, AiAdminState
 from app.core.filtres import IsSuperAdmin, IsAdmin
 from app.service.admin import AdminService
 from app.service.catalog import CatalogService
@@ -13,25 +13,35 @@ from app.service.catalog import CatalogService
 router = Router()
 
 @router.message(Command("admin"), IsAdmin())
-async def admin_panel(message: Message):
+async def admin_panel(message: Message,
+                      state: FSMContext):
+    await state.clear()
+    await state.set_state(AiAdminState.chatting)
     await message.answer("✅ Доступ открыт", reply_markup=kb.admin)
 
 @router.message(Command("mytgid"), IsAdmin())
-async def get_tg_id(message: Message):
+async def get_tg_id(message: Message,
+                    state: FSMContext):
+    await state.clear()
     await message.answer(f"Ваш тг id:")
-    await message.answer(f"{message.from_user.id}", reply_markup=kb.admin)
+    await message.answer(f"{message.from_user.id}")
 
 @router.message(F.text == "🪪 Сотрудники", IsSuperAdmin())
 async def super_admin_panel(message: Message):
     await message.answer("✅ Доступ открыт", reply_markup=kb.super_panel)
 
 @router.message(F.text == "📃 Список работников", IsSuperAdmin())
-async def list_admin(message: Message, ad_sv: AdminService):
+async def list_admin(message: Message,
+                     ad_sv: AdminService,
+                     state: FSMContext):
     admins = await ad_sv.get_info()
     await message.answer(admins, parse_mode="HTML")
+    await state.set_state(AiAdminState.chatting)
 
 @router.message(F.text == "🪪 Добавить администратора", IsSuperAdmin())
 async def get_admin_id(message: Message, state: FSMContext):
+    await state.clear()
+
     await message.answer("введите пожалуйста ID будущего сотрудника: ")
     await message.answer("если не знаете как получить свой id "
                          "напишите мне с устройства которого нужно опознать Tg ID"
@@ -45,7 +55,7 @@ async def get_tg_id_for_admin(message: Message,
                     ad_sv: AdminService):
     if not message.text.isdigit():
         await message.answer("ID должно быть числом и без знаков")
-        await state.clear()
+        await state.set_state(AiAdminState.chatting)
         return
 
     tg_id = int(message.text)
@@ -58,7 +68,8 @@ async def get_tg_id_for_admin(message: Message,
 
     else:
         await message.answer("!Админ с таким id уже существует")
-        await state.clear()
+        await state.set_state(AiAdminState.chatting)
+        return
 
 @router.message(AdminState.get_name, IsSuperAdmin())
 async def set_admin(message: Message,
@@ -72,19 +83,23 @@ async def set_admin(message: Message,
     except Exception as e:
         await message.answer("Что-то пошло не так при попытке передать данные в систему")
         print(e)
-        await state.clear()
+        await state.set_state(AiAdminState.chatting)
+        return
 
     if ok:
         await message.answer("✅ Админ добавлен")
-        await state.clear()
+        await state.set_state(AiAdminState.chatting)
         return
     else:
         await message.answer("произошла ошибка при вводе сотрудника в сиситему")
-        await state.clear()
+        await state.set_state(AiAdminState.chatting)
+        return
 
 
 @router.message(F.text == "✏️ Создать услугу", IsAdmin())
 async def set_catalog(message: Message, state: FSMContext):
+    await state.clear()
+
     await message.answer("🖊️ введите название для вашей новой услуги")
     await state.set_state(CatalogSetState.get_name)
 
@@ -94,6 +109,7 @@ async def get_name(message: Message, state: FSMContext):
         name_obj = message.text.strip()
     except Exception:
         await message.answer("что то пошло не так при вводе названия")
+        await state.set_state(AiAdminState.chatting)
         return
 
     await state.update_data(name=name_obj)
@@ -106,7 +122,7 @@ async def get_price(message: Message, state: FSMContext):
         price_obj = message.text.strip()
     except Exception:
         await message.answer("что то пошло не такпри вводе цены", reply_markup=kb.admin)
-        await state.clear()
+        await state.set_state(AiAdminState.chatting)
         return
 
     await state.update_data(price=price_obj)
@@ -125,7 +141,7 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
         catalog = await ct_sv.create_ct(name, price, duration)
     except Exception as e:
         await message.answer(f"❌ {e}\n\n что то пошло не так при вводе данных", reply_markup=kb.admin)
-        await state.clear()
+        await state.set_state(AiAdminState.chatting)
         return
 
 
@@ -134,7 +150,7 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
                          f"название: {catalog.name}\n"
                          f"цена: {catalog.price} руб\n"
                          f"продолжительность: {catalog.duration} мин", reply_markup=kb.admin)
-    await state.clear()
+    await state.set_state(AiAdminState.chatting)
 
 @router.message(F.text == "Удалить администратора", IsSuperAdmin())
 async def try_delete_admin(message: Message,
@@ -143,6 +159,7 @@ async def try_delete_admin(message: Message,
         admins = await ad_sv.get_all_admin()
     except Exception as e:
         await message.answer("Ошибка при получении списка сотрудников")
+        await state.set_state(AiAdminState.chatting)
         print(e)
         return
 
@@ -150,7 +167,9 @@ async def try_delete_admin(message: Message,
                          reply_markup=kb.admins_keyboard(admins))
 
 @router.callback_query(F.data.startswith("admin:"), IsSuperAdmin())
-async def delete_admin(callback: CallbackQuery, ad_sv: AdminService):
+async def delete_admin(callback: CallbackQuery,
+                       ad_sv: AdminService,
+                       state: FSMContext):
     await callback.answer()
 
     admin_id = int(callback.data.split(":")[1].strip())
@@ -158,6 +177,7 @@ async def delete_admin(callback: CallbackQuery, ad_sv: AdminService):
     selected =await ad_sv.get_ad_by_id(admin_id)
     if selected is None:
         await callback.message.answer("не получилось найти такого сотрудника", reply_markup=kb.admin)
+        await state.set_state(AiAdminState.chatting)
         return
     else:
         await callback.message.answer(f"Вы выбрали:\nname:{selected.name}\ntg_id:{selected.tg_id}")
@@ -167,10 +187,15 @@ async def delete_admin(callback: CallbackQuery, ad_sv: AdminService):
         except Exception as e:
             await callback.message.answer("произошла ошибка при попытки удалении сотрудника")
             print(e)
+            await state.set_state(AiAdminState.chatting)
             return
 
         if ok:
             await callback.message.answer("Сотрудник успешно удален", reply_markup=kb.admin)
+            await state.set_state(AiAdminState.chatting)
+            return
         else:
             await callback.message.answer("Не получилось удалить сотрудника", reply_markup=kb.admin)
+            await state.set_state(AiAdminState.chatting)
+            return
 
