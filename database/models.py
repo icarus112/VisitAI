@@ -20,7 +20,8 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String(15), default="-")
 
     bookings = relationship(
-        "Booking", back_populates="users"
+        "Booking", back_populates="users",
+        cascade="all, delete-orphan"
     )
 
     def __repr__(self):
