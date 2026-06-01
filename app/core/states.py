@@ -30,3 +30,10 @@ class AiUserState(StatesGroup):
 
 class AiAdminState(StatesGroup):
     chatting = State()
+
+class AIBookingCreate(StatesGroup):
+    ask_name = State()
+    ask_date = State()
+    ask_time = State()
+    ask_comment = State()
+    ask_confirm = State()

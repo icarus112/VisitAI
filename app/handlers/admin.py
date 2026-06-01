@@ -3,7 +3,9 @@ from aiogram.dispatcher.middlewares import data
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
+import logging
 
+from app.core import logger
 from app.core import keyboards as kb
 from app.core.states import AdminState, CatalogSetState, AiAdminState
 from app.core.filtres import IsSuperAdmin, IsAdmin
@@ -11,6 +13,7 @@ from app.service.admin import AdminService
 from app.service.catalog import CatalogService
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 @router.message(Command("admin"), IsAdmin())
 async def admin_panel(message: Message,
@@ -18,6 +21,7 @@ async def admin_panel(message: Message,
     await state.clear()
     await state.set_state(AiAdminState.chatting)
     await message.answer("✅ Доступ открыт", reply_markup=kb.admin)
+    logger.info(f"admin {message.from_user.id} get access")
 
 @router.message(Command("mytgid"), IsAdmin())
 async def get_tg_id(message: Message,
@@ -29,6 +33,8 @@ async def get_tg_id(message: Message,
 @router.message(F.text == "🪪 Сотрудники", IsSuperAdmin())
 async def super_admin_panel(message: Message):
     await message.answer("✅ Доступ открыт", reply_markup=kb.super_panel)
+    logger.info(f"SUPERADMIN {message.from_user.id} get access")
+
 
 @router.message(F.text == "📃 Список работников", IsSuperAdmin())
 async def list_admin(message: Message,
@@ -67,7 +73,7 @@ async def get_tg_id_for_admin(message: Message,
         await state.set_state(AdminState.get_name)
 
     else:
-        await message.answer("!Админ с таким id уже существует")
+        await message.answer("! Админ с таким id уже существует")
         await state.set_state(AiAdminState.chatting)
         return
 
@@ -82,16 +88,18 @@ async def set_admin(message: Message,
         ok = await ad_sv.set_admin(name=name, tg_id=tg_id)
     except Exception as e:
         await message.answer("Что-то пошло не так при попытке передать данные в систему")
-        print(e)
+        logger.exception(f"admin={name}, id= {message.from_user.id} failed to get admin rights")
         await state.set_state(AiAdminState.chatting)
         return
 
     if ok:
         await message.answer("✅ Админ добавлен")
+        logger.info(f"admin={name}, id= {message.from_user.id} get admin rights")
         await state.set_state(AiAdminState.chatting)
         return
     else:
         await message.answer("произошла ошибка при вводе сотрудника в сиситему")
+        logger.exception(f"admin={name}, id= {message.from_user.id} failed to get admin rights")
         await state.set_state(AiAdminState.chatting)
         return
 
@@ -109,6 +117,7 @@ async def get_name(message: Message, state: FSMContext):
         name_obj = message.text.strip()
     except Exception:
         await message.answer("что то пошло не так при вводе названия")
+        logger.exception(f"admin id= {message.from_user.id} failed to type name of catalog")
         await state.set_state(AiAdminState.chatting)
         return
 
@@ -121,7 +130,8 @@ async def get_price(message: Message, state: FSMContext):
     try:
         price_obj = message.text.strip()
     except Exception:
-        await message.answer("что то пошло не такпри вводе цены", reply_markup=kb.admin)
+        logger.exception(f"admin id= {message.from_user.id} failed to type price of catalog")
+        await message.answer("что то пошло не так при вводе цены", reply_markup=kb.admin)
         await state.set_state(AiAdminState.chatting)
         return
 
@@ -140,11 +150,12 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
     try:
         catalog = await ct_sv.create_ct(name, price, duration)
     except Exception as e:
+        logger.exception(f"admin id={message.from_user.id} can't create catalog {name}")
         await message.answer(f"❌ {e}\n\n что то пошло не так при вводе данных", reply_markup=kb.admin)
         await state.set_state(AiAdminState.chatting)
         return
 
-
+    logger.info(f"created new catalog [id={catalog.id}, name={catalog.name}] by admin id={message.from_user.id}")
     await message.answer(f"Создана новая услуга:\n\n"
                          f"id: {catalog.id}\n"
                          f"название: {catalog.name}\n"
@@ -154,13 +165,14 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
 
 @router.message(F.text == "Удалить администратора", IsSuperAdmin())
 async def try_delete_admin(message: Message,
-                           ad_sv: AdminService):
+                           ad_sv: AdminService,
+                           state: FSMContext):
     try:
         admins = await ad_sv.get_all_admin()
     except Exception as e:
         await message.answer("Ошибка при получении списка сотрудников")
         await state.set_state(AiAdminState.chatting)
-        print(e)
+        logger.exception(f"admin id= {message.from_user.id} can't get list of admins")
         return
 
     await message.answer("выберите администатора которого хотите убрать:",
@@ -177,6 +189,7 @@ async def delete_admin(callback: CallbackQuery,
     selected =await ad_sv.get_ad_by_id(admin_id)
     if selected is None:
         await callback.message.answer("не получилось найти такого сотрудника", reply_markup=kb.admin)
+        logger.exception(f"admin id= {admin_id} can't get admin for removing admin")
         await state.set_state(AiAdminState.chatting)
         return
     else:
@@ -186,16 +199,18 @@ async def delete_admin(callback: CallbackQuery,
             ok = await ad_sv.remove_admin_by_id(admin_id)
         except Exception as e:
             await callback.message.answer("произошла ошибка при попытки удалении сотрудника")
-            print(e)
+            logger.exception(f"admin id= {admin_id} failed to remove admin")
             await state.set_state(AiAdminState.chatting)
             return
 
         if ok:
             await callback.message.answer("Сотрудник успешно удален", reply_markup=kb.admin)
+            logger.info(f"admin id={admin_id} name={selected.name} is deleted")
             await state.set_state(AiAdminState.chatting)
             return
         else:
             await callback.message.answer("Не получилось удалить сотрудника", reply_markup=kb.admin)
+            logger.exception(f"admin id= {admin_id} failed to remove admin")
             await state.set_state(AiAdminState.chatting)
             return
 

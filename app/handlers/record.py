@@ -1,19 +1,17 @@
-import datetime
-
 from aiogram import Router, F, Bot
-from aiogram.client import bot
-from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
+import logging
 
 from app.core import keyboards as kb
-from app.core.states import CreateUserState, Requests
+from app.core.states import CreateUserState, Requests, AiUserState
 from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
 from app.service.user import UserService
 
 router = Router()
+logger = logging.getLogger(__name__)
 #проверить ввод даты
 #проверить без комента
 '''
@@ -67,10 +65,12 @@ async def ct_select(callback: CallbackQuery,
                                          f"{selected.price} руб / {selected.duration} мин")
         await callback.message.answer("на какую дату вы бы хотели записаться:", reply_markup=kb.get_date)
 
-        await state.update_data(user_tg_id=callback.from_user.id)
-        await state.update_data(ct_id=selected.id)
+        await state.update_data(user_tg_id=callback.from_user.id,
+                                ct_id=selected.id,
+                                ct_name=selected.name)
         await state.set_state(Requests.ask_date)
     else:
+        logger.info(f"can't find catalog={selected.name}")
         await callback.message.edit_text("Услуга не найдена")
         await state.clear()
 
@@ -100,17 +100,17 @@ async def request_get_date(message: Message,
                            state: FSMContext,
                            bk_sv: BookingService):
     try:
-        date_obj = message.text.strip()
-        date_obj = bk_sv.parse_date(date_obj)
+        date_str = message.text.strip()
+        date_obj = bk_sv.parse_date(date_str)
     except Exception as e:
+        logger.exception(f"happened smth wrong in entering date date_str:{date_str}, e: {e}")
         await message.answer("что то пошло не так при вводе даты")
-        print(e)
         await state.clear()
         return
 
     await state.update_data(date=date_obj)
     await message.answer(f"отлично вы ввели: {date_obj.strftime('%d.%m.%Y')}")
-    await message.answer("Прошу введите время например (12:30 или 17 00)")
+    await message.answer("Прошу введите время (например 12:30 или 17 00)")
     await state.set_state(Requests.get_hour)
 
 
@@ -119,9 +119,10 @@ async def request_time(message: Message,
                        state: FSMContext):
     try:
         time_obj = message.text.strip()
-    except Exception:
+    except Exception as e:
         await message.answer("что то пошло не так при вводе времени")
-        await state.clear()
+        logger.exception(f"happened smth wrong in entering date date_str:{time_obj}, e: {e}")
+        await state.set_state(AiUserState.chatting)
         return
 
     await state.update_data(time=time_obj)
@@ -144,9 +145,15 @@ async def request_without_comment(callback: CallbackQuery,
         comment="-"
     )
 
+    data = await state.get_data()
+    ct_name = data.get("name")
+    ct_id = data.get("ct_id")
+
+    logger.info(f"forwarded new booking={ct_name}, ct_id:{ct_id} by user={callback.from_user.id} to admin ")
+
     await callback.message.edit_text(text)
     await callback.answer()
-    await state.clear()
+    await state.set_state(AiUserState.chatting)
 
 
 @router.callback_query(F.data == "with_comment", Requests.get_comment)
@@ -173,7 +180,7 @@ async def create_request(message: Message,
     )
 
     await message.answer(text)
-    await state.clear()
+    await state.set_state(AiUserState.chatting)
 
 async def send_booking_request(
     state: FSMContext,
@@ -191,7 +198,6 @@ async def send_booking_request(
     if not user_tg_id or not ct_id or not time_str or not date_str:
         return False, "Не хватает данных для создания заявки"
 
-
     try:
 
         result = await bk_sv.create_booking(
@@ -203,7 +209,6 @@ async def send_booking_request(
         )
 
     except Exception as e:
-        print(e)
         return False, "Ошибка при создании заявки"
 
     booking = result.booking
@@ -234,6 +239,7 @@ async def send_booking_request(
             reply_markup=kb.admin_booking(booking.id)
         )
 
+    await state.set_state(AiUserState.chatting)
     return True, "Заявка отправлена администратору"
 '''
 ========================================================================================
@@ -269,18 +275,23 @@ async def without_pay(callback: CallbackQuery,
 
     if booking_id is None:
         await callback.message.answer("Ошибка: booking_id не найден", reply_markup=kb.main)
+        await state.set_state(AiUserState.chatting)
         return
 
     try:
         await bk_sv.cancel_pay(booking_id)
+        await state.set_state(AiUserState.chatting)
     except Exception as e:
         await callback.message.edit_text("что то пошло не так в хендлере")
         await callback.message.answer("Главное меню", reply_markup=kb.main)
         print(e)
+        await state.set_state(AiUserState.chatting)
         return
 
     await callback.message.edit_text("Отлично) Будем ждать вас")
     await callback.message.answer("Главное меню", reply_markup=kb.main)
+    await state.set_state(AiUserState.chatting)
+
 
 
 

@@ -1,14 +1,16 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
+import logging
 
-from app.core.states import CreateUserState
+from app.core.states import CreateUserState, AiUserState
 from app.core import keyboards as kb
 from app.handlers.record import show_catalogs
 from app.service.catalog import CatalogService
 from app.service.user import UserService
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 '''
 ========================================================================================
@@ -17,7 +19,7 @@ router = Router()
 '''
 @router.callback_query(F.data == "accept_name", CreateUserState.ask_name)
 async def accept_name(callback: CallbackQuery, state: FSMContext):
-    # await callback.message.edit_reply_markup(reply_markup=None)  # ← убрали кнопки
+    # await callback.message.edit_reply_markup(reply_markup=None)  # убрали кнопки
     data = await state.get_data()
     name = data.get("suggested_name")
 
@@ -80,13 +82,15 @@ async def accept_number(message: Message,
     try:
         ok = await us_sv.create_user(name, tg_id, phone)
     except Exception as e:
-        await message.answer(f"❌ {e}\n\n что то пошло не так при вводе длительности услуги")
+        logger.warning(f"cant create user, [username={name}, tg_id={tg_id}], exception= {e}")
+        await message.answer(f"❌ что то пошло не так при вводе контактов")
         return
 
     if ok:
         await message.answer(f"Отлично 😄 Теперь продолжим выбор услуги.")
         await show_catalogs(message, ct_sv)
     else:
+        logger.warning(f"cant create user, [username={name}, tg_id={tg_id}]")
         await message.answer(f"Что то пошло не так повторите попытку")
 
     await state.clear()
@@ -106,13 +110,15 @@ async def reject_number(message: Message,
     try:
         ok = await us_sv.create_user(name, tg_id, phone)
     except Exception as e:
-        await message.answer(f"❌ {e}\n\n что то пошло не так при вводе длительности услуги")
+        await message.answer(f"❌ что то пошло не так при вводе создании пользователя")
+        logger.warning(f"cant create user, [username={name}, tg_id={tg_id}], exception= {e}")
+        await state.clear()
         return
 
     if ok:
         await message.answer(f"Отлично 😄 Теперь продолжим выбор услуги.")
         await show_catalogs(message, ct_sv)
     else:
+        logger.warning(f"cant create user, [username={name}, tg_id={tg_id}]")
         await message.answer(f"Что то пошло не так повторите попытку")
-
-    await state.clear()
+        await state.set_state(AiUserState.chatting)

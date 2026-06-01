@@ -1,27 +1,30 @@
 import asyncio
 from aiogram import Bot, Dispatcher, Router
 from aiogram.client.session.aiohttp import AiohttpSession
+import logging
 
+from app.core import logger
 from database.async_engine import async_session
 from app.core.middlewares import AppMiddleware
 from app.core.routers import router
 from conf import BOT_TOKEN, BOT_PROXY
-import logging
 
 # @router.message(CommandStart)
 # async def health_check(message: Message):
 #     await message.answer("I'm alive")
 
+logger = logging.getLogger(__name__)
+
 async def main():
     if BOT_PROXY:
         session = AiohttpSession(proxy=BOT_PROXY)
         bot = Bot(token=BOT_TOKEN, session=session)
-        print(f"Proxy enabled: {BOT_PROXY}")
+        logger.info(f"Proxy enabled: {BOT_PROXY}")
     else:
         bot = Bot(token=BOT_TOKEN)
-        print("Proxy disabled")
+        logger.info("Proxy disabled")
     dp=Dispatcher()
-    logging.basicConfig(level=logging.DEBUG)
+    # logging.basicConfig(level=logging.DEBUG)
 
     # middleware
     dp.message.outer_middleware(AppMiddleware(async_session))
@@ -33,8 +36,19 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
+    logger.info(
+        "Bot started"
+    )
+
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("бот выкл.")
+        logger.info(
+            "Bot stopped by KeyboardInterrupt"
+        )
+
+    except Exception:
+        logger.exception(
+            "Fatal error while running bot"
+        )

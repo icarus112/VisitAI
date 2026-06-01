@@ -4,16 +4,17 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from app.core import keyboards as kb
 from app.core.states import AiUserState
+from app.resources import phrases
 
 router = Router()
 
 @router.message(CommandStart())
 async def start_handler(message: Message,
                         state: FSMContext):
+    question = phrases.ask_phrase(phrases.greeting)
 
     await message.answer(
-        "Привет 👋\n\n"
-        "Я AI-помощник для записи на услуги.")
+        question)
 
     await message.answer(
         "Можете написать обычным текстом:\n"

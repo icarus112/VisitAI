@@ -2,7 +2,7 @@ from typing import Dict, Any, Callable
 from aiogram.types import TelegramObject
 from aiogram import BaseMiddleware
 
-from app.service.ai_intent import AIIntentService
+from app.core.ai_intent import AIIntentService
 from conf import AI_API
 from app.repository.admin import AdminRepos
 from app.repository.booking import BookingRepos

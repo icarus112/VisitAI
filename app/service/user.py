@@ -1,5 +1,8 @@
 from app.shemas.record import UserCreate
 from database.models import User
+import logging
+
+logger = logging.getLogger(__name__)
 
 class UserService:
     def __init__(self, us_rp):
@@ -14,11 +17,12 @@ class UserService:
                               tg_id=tg_id,
                               phone=phone)
 
-            user= await self.us_rp.create_user(user)
-            if user:
-                return True
+            created_user= await self.us_rp.create_user(user)
 
-            return False
+            return created_user is not None
+
         except Exception:
+            logger.exception(
+                f"Failed to create user tg_id={tg_id}"
+            )
             return False
-

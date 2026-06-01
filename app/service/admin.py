@@ -1,11 +1,12 @@
 from typing import List
 
 from aiogram.types import Message
-
+import logging
 from app.core.enum import Role
 from conf import SUPER_ADMINS, DEV_MODE
 from database.models import Admin
 
+logger = logging.getLogger(__name__)
 
 # def is_super_admin(tg_id: int) -> bool:
 #     return tg_id in SUPER_ADMINS
@@ -25,18 +26,21 @@ class AdminService:
             await self.ad_rp.set_admin(tg_id, name)
             return True
         except Exception:
+            logger.warning(f"cant set admin, [tg_id={tg_id}, name={name}]")
             return False
 
     async def get_ad_by_tg_id(self, tg_id: int) -> Admin | None:
         try:
             return await self.ad_rp.get_ad_by_tg_id(tg_id)
         except Exception:
+            logger.warning(f"can't get admin by tg_id, [tg_id={tg_id}]")
             return None
 
     async def get_ad_by_id(self, id: int) -> Admin | None:
         try:
             return await self.ad_rp.get_ad_by_id(id)
         except Exception:
+            logger.warning(f"can't get admin by id, [id={id}]")
             return None
 
     async def change_role(self, tg_id: int, new_role: str) -> Role:
@@ -72,7 +76,7 @@ class AdminService:
             return text
 
         else:
-            return "Список пуст, сотркдников нету"
+            return "Список пуст, сотрудников нету"
 
     async def remove_admin_by_id(self, id: int):
         ok = await self.ad_rp.remove_admin_by_id(id)

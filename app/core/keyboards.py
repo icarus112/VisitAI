@@ -95,8 +95,14 @@ def admin_booking(booking_id: int):
         ]
     )
 
-confirm_ai = InlineKeyboardMarkup(inline_keyboard=[
+confirm_ai_booking = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm_ai_booking"),
     InlineKeyboardButton(text="❌ Отмена", callback_data="cancel_ai_booking")
+    ]
+])
+
+confirm_ai_create_ct = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm_ai_create_ct"),
+     InlineKeyboardButton(text="❌ Отмена", callback_data="cancel_ai_create_ct")
     ]
 ])

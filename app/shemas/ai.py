@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class AIIntentBooking(BaseModel):
@@ -22,7 +22,7 @@ class AIIntentBooking(BaseModel):
     user_problem: str | None = None
     recommended_queries: list[str] = [] # лист рекомендаций
 
-    missing_fields: list[str] = [] #данные которые не хватают
+    missing_fields: list[str] = Field(default_factory=list) #данные которые не хватают
     confidence: float = 0.0
 
 class AIIntentCatalog(BaseModel):
@@ -38,5 +38,5 @@ class AIIntentCatalog(BaseModel):
     price: Decimal | None = None
     duration: int | None = None
 
+    missing_fields: list[str] = []  # данные которые не хватают
     confidence: float = 0.0
-

@@ -1,6 +1,9 @@
 import json
 from openai import AsyncOpenAI
-from app.shemas.ai import AIIntentBooking
+from app.shemas.ai import AIIntentBooking, AIIntentCatalog
+from datetime import datetime
+
+today = datetime.today()
 
 class AIIntentService:
     def __init__(self, api_key: str):
@@ -10,7 +13,7 @@ class AIIntentService:
 
     async def parse_user_message(self, text: str | None) -> AIIntentBooking:
         prompt = f"""
-Ты помощник Telegram-бота для записи клиентов.
+Ты помощник Telegram-бота для записи клиентов. Сегодня число {today.strftime('%d.%m.%Y')}
 
 Твоя задача - понять сообщение пользователя и вернуть ТОЛЬКО JSON.
 
@@ -72,7 +75,7 @@ class AIIntentService:
                 confidence=0.0
             )
 
-    async def parse_create_catalog(self, text: str | None) -> AIIntentBooking:
+    async def parse_create_catalog(self, text: str | None) -> AIIntentCatalog:
         prompt = f"""
 Ты помощник Telegram-бота для записи клиентов.
 
@@ -122,13 +125,13 @@ class AIIntentService:
         raw_text = raw_text.replace("```json", "").replace("```", "").strip()
         try:
             data = json.loads(raw_text)
-            return AIIntentBooking(**data)
+            return AIIntentCatalog(**data)
 
         except Exception as e:
             print("raw_text:", raw_text)
             print("AI parse error: ", e)
 
-            return AIIntentBooking(
+            return AIIntentCatalog(
                 intent="unknown",
                 confidence=0.0
             )

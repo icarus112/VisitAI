@@ -1,22 +1,32 @@
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import List
-
+import logging
 from app.shemas.catalog import CatalogCreate, CatalogResponse
 
 from database.models import Catalog
 
+logger = logging.getLogger(__name__)
 
 class CatalogService:
     def __init__(self, ct_rp):
         self.ct_rp = ct_rp
 
-    async def str_to_decimal(self, text: str) -> Decimal:
-        t = text.strip().replace(",", ".")
+    async def str_to_decimal(self, value) -> Decimal:
+        if value is None:
+            logger.warning("get value None, can't convert to Decimal")
+            raise ValueError("Цена не может быть пустой")
 
-        try:
-            value = Decimal(t)
-        except InvalidOperation:
-            raise ValueError("нужно число например 1.5")
+        if isinstance(value, Decimal):
+            decimal_value = value
+
+        else:
+            text = str(value).strip().replace(",", ".")
+
+            try:
+                decimal_value = Decimal(text)
+            except InvalidOperation:
+                logger.warning(" invalid operation, can't convert to Decimal")
+                raise ValueError("Цена должна быть числом, например 1500 или 1500.5")
 
         if value < 0:
             raise ValueError("Число должны быть положительными или 0")
@@ -26,6 +36,7 @@ class CatalogService:
 
     async def create_ct(self, name, price, duration) -> CatalogResponse:
         if not name:
+            logger.warning("get ct_name None, can't create catalog")
             raise ValueError("Название не может быть пустым")
 
         price = await self.str_to_decimal(price)
@@ -33,9 +44,11 @@ class CatalogService:
         try:
             duration = int(duration)
         except Exception:
+            logger.warning("get invalid duration, can't create catalog")
             raise ValueError("Длительность должна быть числом, например 30")
 
         if duration <= 0:
+            logger.warning("get invalid duration, can't create catalog")
             raise ValueError("Длительность должна быть больше 0")
 
         ct = CatalogCreate(
@@ -48,6 +61,7 @@ class CatalogService:
     async def get_all(self) -> List[Catalog]:
         catalogs = await self.ct_rp.get_all()
         if not catalogs:
+            logger.warning("can't get all catalogs")
             raise ValueError("ничего не найдено")
 
         return catalogs
@@ -57,7 +71,7 @@ class CatalogService:
 
         return selected
 
-    async def find_by_name(self, query: str) -> Catalog:
+    async def find_by_name(self, query: str) -> List[Catalog]:
         return await self.ct_rp.find_by_name(query)
 
 # async def prog():

@@ -1,14 +1,23 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
+import traceback
+import logging
 
+from openai.types.beta.threads import message
+
+# from app.core import logger
 from app.core.filtres import IsAdmin
-from app.service.ai_intent import AIIntentService
+from app.core.states import AiAdminState
+from app.service.admin import AdminService
+from app.core.ai_intent import AIIntentService
 from app.service.catalog import CatalogService
+from app.core import keyboards as kb
 
 router = Router()
+logger = logging.getLogger(__name__)
 
-@router.message(IsAdmin())
+@router.message(IsAdmin(), AiAdminState.chatting)
 async def ai_create_catalog(
         message: Message,
         state: FSMContext,
@@ -16,3 +25,78 @@ async def ai_create_catalog(
         ai_sv: AIIntentService):
 
     result = await ai_sv.parse_create_catalog(message.text)
+
+    if result.intent == "unknown":
+        logger.warning(
+            f"Unknown admin request for ai: "
+            f"user={message.from_user.id} "
+            f"text={message.text}"
+        )
+
+        await message.answer(f"Я не понял ваш запрос. Можете выбрать действие кнопками",
+                             reply_markup=kb.admin)
+
+    if result.intent == "create_catalog":
+        if "name" in result.missing_fields or not result.name:
+            await message.answer("как вы хотите ее назвать?")
+            return
+
+        if "price" in result.missing_fields or not result.price:
+            await message.answer("какую цену хотите поставить?")
+            return
+
+        if "duration" in result.missing_fields or not result.duration:
+            await message.answer("Какую продолжительность поставите?")
+            return
+
+        await state.update_data(
+            name=result.name,
+            price=result.price,
+            duration=result.duration
+        )
+
+        await message.answer(
+            "Проверьте поля:\n\n"
+            f"Название: {result.name}\n"
+            f"Цена: {result.price} руб\n"
+            f"Продолжителность услуги: {result.duration} мин",
+            reply_markup=kb.confirm_ai_create_ct
+        )
+
+@router.callback_query(IsAdmin(), AiAdminState.chatting, F.data == "confirm_ai_create_ct")
+async def confirm_ai_create_ct(
+        callback: CallbackQuery,
+        state: FSMContext,
+        ct_sv: CatalogService,
+        ad_sv: AdminService):
+    data = await state.get_data()
+
+    name = data.get("name")
+    price_str = data.get("price")
+    duration_str = data.get("duration")
+
+    try:
+        catalog = await ct_sv.create_ct(name, price_str, duration_str)
+    except Exception as e:
+        await callback.message.edit_text(f"❌ что то пошло не так при вводе данных", reply_markup=kb.admin)
+        logger.exception(f"admin= {callback.from_user.id} can't create catalog")
+        await state.set_state(AiAdminState.chatting)
+        return
+
+    logger.info(f"admin id= {callback.from_user.id} created new catalog"
+                f"catalog_id:{catalog.id} catalog_name:{catalog.name}")
+    await callback.message.edit_text(f"Создана новая услуга:\n\n"
+                         f"id: {catalog.id}\n"
+                         f"название: {catalog.name}\n"
+                         f"цена: {catalog.price} руб\n"
+                         f"продолжительность: {catalog.duration} мин", reply_markup=kb.admin)
+    await state.set_state(AiAdminState.chatting)
+
+@router.callback_query(IsAdmin(), AiAdminState.chatting, F.data == "cancel_ai_create_ct")
+async def cancel_ai_booking(
+        callback: CallbackQuery,
+        state: FSMContext):
+
+    await state.clear()
+    await callback.message.edit_text("❌ Создание услуги отменено")
+    await callback.message.answer("Главное меню", reply_markup=kb.main)

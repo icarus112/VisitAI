@@ -3,6 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from app.core.states import AiUserState
 from app.service.admin import AdminService
 from conf import DEV_MODE
 
@@ -39,6 +40,7 @@ async def change_role(message: Message, ad_sv: AdminService, state: FSMContext):
             tg_id=message.from_user.id,
             new_role = parts[1].upper()
         )
+
     except ValueError :
         await message.answer(
             "❌ Такой роли нет.\n"
@@ -46,3 +48,4 @@ async def change_role(message: Message, ad_sv: AdminService, state: FSMContext):
         return
 
     await message.answer(f"✅ DEV-роль изменена на: {role.value}")
+    await state.set_state(AiUserState.chatting)
