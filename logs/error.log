@@ -353,3 +353,148 @@ Traceback (most recent call last):
   File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/client/session/aiohttp.py", line 176, in make_request
     raise TelegramNetworkError(method=method, message=f"{type(e).__name__}: {e}") from e
 aiogram.exceptions.TelegramNetworkError: HTTP Client says - ClientConnectorError: Cannot connect to host api.telegram.org:443 ssl:default [None]
+2026-06-03 16:27:27,775 | ERROR | aiogram.event | Cause exception while process update id=78298670 by bot id=8635000285
+ValueError: Booking 11 not found
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/middlewares.py", line 44, in __call__
+    result = await handler(event, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/record.py", line 285, in without_pay
+    await bk_sv.cancel_pay(booking_id)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/service/booking.py", line 125, in cancel_pay
+    raise ValueError(
+ValueError: Booking 11 not found
+2026-06-03 16:28:25,913 | ERROR | aiogram.event | Cause exception while process update id=78298679 by bot id=8635000285
+ValueError: Booking 12 not found
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/middlewares.py", line 44, in __call__
+    result = await handler(event, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/record.py", line 285, in without_pay
+    await bk_sv.cancel_pay(booking_id)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/service/booking.py", line 125, in cancel_pay
+    raise ValueError(
+ValueError: Booking 12 not found
+2026-06-03 16:50:42,430 | ERROR | app.handlers.record | can't create booking tg_id=6480514308, ct_id=3, date_str: date_str=2026-06-03,time_str=14 00, e: name 'ct_name' is not defined
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/record.py", line 201, in send_booking_request
+    result = await bk_sv.create_booking(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/service/booking.py", line 58, in create_booking
+    logger.info(f"forwarded new booking={ct_name}, ct_id:{ct_id} by user={callback.from_user.id} to admin ")
+                                         ^^^^^^^
+NameError: name 'ct_name' is not defined

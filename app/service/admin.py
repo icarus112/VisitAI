@@ -21,13 +21,11 @@ class AdminService:
     async def is_admin(self, tg_id: int) -> bool:
         return self.ad_rp.is_admin(tg_id)
 
-    async def set_admin(self, tg_id, name: str) -> bool:
-        try:
-            await self.ad_rp.set_admin(tg_id, name)
-            return True
-        except Exception:
-            logger.warning(f"cant set admin, [tg_id={tg_id}, name={name}]")
-            return False
+    async def set_admin(self, tg_id, name: str) -> None:
+        await self.ad_rp.set_admin(tg_id, name)
+        logger.info(f"admin={name}, tg_id= {tg_id} get admin rights")
+
+
 
     async def get_ad_by_tg_id(self, tg_id: int) -> Admin | None:
         try:
@@ -78,9 +76,9 @@ class AdminService:
         else:
             return "Список пуст, сотрудников нету"
 
-    async def remove_admin_by_id(self, id: int):
-        ok = await self.ad_rp.remove_admin_by_id(id)
-        if ok:
-            return True
-        else:
-            return False
+    async def remove_admin_by_id(self, id: int) -> None:
+        ad = await self.ad_rp.get_admin_by_id(id)
+        await self.ad_rp.remove_admin_by_id(id)
+
+        logger.info(f"admin={ad.name}, tg_id= {ad.tg_id} is removed")
+

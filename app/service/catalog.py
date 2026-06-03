@@ -34,7 +34,7 @@ class CatalogService:
         return value.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
 
-    async def create_ct(self, name, price, duration) -> CatalogResponse:
+    async def create_ct(self, name, price, duration, ad_tg_id) -> CatalogResponse:
         if not name:
             logger.warning("get ct_name None, can't create catalog")
             raise ValueError("Название не может быть пустым")
@@ -56,6 +56,7 @@ class CatalogService:
             price=price,
             duration=duration,
         )
+        logger.info(f"created new catalog [name={ct.name}] by admin id={ad_tg_id}")
         return await self.ct_rp.create_ct(ct)
 
     async def get_all(self) -> List[Catalog]:

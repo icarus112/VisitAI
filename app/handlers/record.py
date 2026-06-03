@@ -149,8 +149,6 @@ async def request_without_comment(callback: CallbackQuery,
     ct_name = data.get("name")
     ct_id = data.get("ct_id")
 
-    logger.info(f"forwarded new booking={ct_name}, ct_id:{ct_id} by user={callback.from_user.id} to admin ")
-
     await callback.message.edit_text(text)
     await callback.answer()
     await state.set_state(AiUserState.chatting)
@@ -209,6 +207,9 @@ async def send_booking_request(
         )
 
     except Exception as e:
+        logger.exception(f"can't create booking tg_id={user_tg_id}, "
+                         f"ct_id={ct_id}, date_str: date_str={date_str},"
+                         f"time_str={time_str}, e: {e}")
         return False, "Ошибка при создании заявки"
 
     booking = result.booking
@@ -281,12 +282,18 @@ async def without_pay(callback: CallbackQuery,
     try:
         await bk_sv.cancel_pay(booking_id)
         await state.set_state(AiUserState.chatting)
+
     except Exception as e:
         await callback.message.edit_text("что то пошло не так в хендлере")
         await callback.message.answer("Главное меню", reply_markup=kb.main)
-        print(e)
+
+        logger.exception(
+            "failed to cancel pay, booking_id=%s, user_id=%s",
+            booking_id,
+            callback.from_user.id,
+        )
         await state.set_state(AiUserState.chatting)
-        return
+        raise
 
     await callback.message.edit_text("Отлично) Будем ждать вас")
     await callback.message.answer("Главное меню", reply_markup=kb.main)

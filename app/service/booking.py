@@ -1,10 +1,10 @@
 import datetime
-from datetime import time
 import logging
 
-from app.core import enum, logger
+from app.core import enum
+from logs import logger
 from app.shemas.record import BookingCreate, BookingRequestResult
-from database.models import User, Booking
+from database.models import Booking
 
 logger = logging.getLogger(__name__)
 class BookingService:
@@ -37,7 +37,7 @@ class BookingService:
         elif isinstance(date_str, str):
             booking_date = self.parse_date(date_str)
         else:
-            logging.warning("wrong date format for creating booking, date_str= ", date_str)
+            logger.warning("wrong date format for creating booking, date_str= ", date_str)
             raise ValueError("Неверный тип даты в sv")
         parsed_time = self.parse_time(time_str)
 
@@ -49,8 +49,13 @@ class BookingService:
             status=enum.BookStatus.PENDING,
             comment=comment
         )
+        try:
+            new_booking = await self.bk_rp.create_booking(booking)
+        except Exception as e:
+            logger.exception("database error while creating booking")
+            raise
 
-        new_booking = await self.bk_rp.create_booking(booking)
+        logger.info(f"forwarded new booking={ct.name}, ct_id:{ct.id} by user={user.id} to admin ")
 
         return BookingRequestResult(
             booking=new_booking,
@@ -73,13 +78,13 @@ class BookingService:
         elif len(wd) == 3:
             new_wd = f"{wd[2]}.{wd[1]}.{wd[0]}"
         else:
-            logging.warning("wrong date format for creating booking, date_str= ", date_str)
+            logging.warning(f"can't parse date for creating booking , date_str= {date_str}")
             raise ValueError("Неверный формат даты в sv")
 
         try:
             return datetime.datetime.strptime(new_wd, "%Y.%m.%d").date()
         except ValueError:
-            logging.warning("can't parse date for creating booking , date_str= ", date_str)
+            logging.warning(f"can't parse date for creating booking , date_str= {date_str}")
             raise ValueError("Ошибка при переводе даты в sv")
 
     def parse_time(self, time_str: str) -> datetime.time:
@@ -88,7 +93,7 @@ class BookingService:
         try:
             return datetime.time.fromisoformat(time_str)
         except ValueError:
-            logger.warning("wrong time format for creating booking, time_str= ", time_str)
+            logger.warning(f"wrong time format for creating booking, time_str= {time_str}")
             raise ValueError("Ошибка при переводе времени в sv")
 
     async def get_booking(self, booking_id: int) -> Booking | None:
@@ -113,20 +118,18 @@ class BookingService:
 
     async def cancel_pay(self, booking_id: int):
         booking = await self.bk_rp.get_booking(booking_id)
+
         if booking is None:
-            logger.warning(
-                f"booking not found "
-                f"booking_id={booking_id}"
-            )
+            raise ValueError(f"Booking {booking_id} not found")
 
-        raise ValueError(
-            f"Booking {booking_id} not found"
+        rowcount = await self.bk_rp.cancel_pay(booking_id)
+
+        if rowcount == 0:
+            raise RuntimeError(f"Booking {booking_id} was not updated")
+
+        logger.info(
+            "booking cancelled without online payment, booking_id=%s",
+            booking_id,
         )
-
-        await self.bk_rp.cancel_pay(
-            booking_id
-        )
-
-
 
 

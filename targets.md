@@ -5,9 +5,6 @@ ___
 2. - Добавить ИИ для создание Catalog 
 3. - сделать правильное заполнение missing_flow для ИИ flow
 4. Сделать ИИ более человеко подобным для общения
-   1. System prompt/personality
-   2. Conversation memory
-   3. State/context management
 5. Сделать норм Semantic search
 6. Сделать дпужелюбный FAQ
 7. tool calling - норм вызов функции от ИИ

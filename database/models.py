@@ -55,6 +55,7 @@ class Booking(Base):
     status: Mapped[BookStatus] = mapped_column(Enum(BookStatus), default= enum.BookStatus.PENDING, nullable=False)
     payment_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     comment: Mapped[str] = mapped_column(String(200))
+
     users = relationship(
         "User", back_populates="bookings")
 

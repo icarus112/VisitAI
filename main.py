@@ -1,9 +1,9 @@
 import asyncio
-from aiogram import Bot, Dispatcher, Router
+from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 import logging
 
-from app.core import logger
+from logs import logger
 from database.async_engine import async_session
 from app.core.middlewares import AppMiddleware
 from app.core.routers import router

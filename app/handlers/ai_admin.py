@@ -76,15 +76,14 @@ async def confirm_ai_create_ct(
     duration_str = data.get("duration")
 
     try:
-        catalog = await ct_sv.create_ct(name, price_str, duration_str)
+        catalog = await ct_sv.create_ct(name, price_str, duration_str, callback.from_user.id)
     except Exception as e:
         await callback.message.edit_text(f"❌ что то пошло не так при вводе данных", reply_markup=kb.admin)
         logger.exception(f"admin= {callback.from_user.id} can't create catalog")
         await state.set_state(AiAdminState.chatting)
         return
 
-    logger.info(f"admin id= {callback.from_user.id} created new catalog"
-                f"catalog_id:{catalog.id} catalog_name:{catalog.name}")
+
     await callback.message.edit_text(f"Создана новая услуга:\n\n"
                          f"id: {catalog.id}\n"
                          f"название: {catalog.name}\n"

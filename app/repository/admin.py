@@ -66,7 +66,7 @@ class AdminRepos:
         admin = await self.get_ad_by_id(id)
 
         if admin is None:
-            return False
+            raise ValueError (f"cant get admin by id for removing admin, ad_id= {id}")
 
         await self.session.delete(admin)
         return True

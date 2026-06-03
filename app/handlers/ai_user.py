@@ -262,8 +262,6 @@ async def confirm_ai_booking(
         comment=data.get('comment', '-')
     )
 
-    logger.info(f"forwarded new booking={catalog_query} by user={callback.from_user.id} to admin ")
-
     await callback.message.edit_text(text)
 
 @router.callback_query(AiUserState.chatting, F.data == "cancel_ai_booking")

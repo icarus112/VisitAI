@@ -108,17 +108,11 @@ async def reject_number(message: Message,
     tg_id = message.from_user.id
 
     try:
-        ok = await us_sv.create_user(name, tg_id, phone)
+        await us_sv.create_user(name, tg_id, phone)
     except Exception as e:
         await message.answer(f"❌ что то пошло не так при вводе создании пользователя")
         logger.warning(f"cant create user, [username={name}, tg_id={tg_id}], exception= {e}")
         await state.clear()
         return
 
-    if ok:
-        await message.answer(f"Отлично 😄 Теперь продолжим выбор услуги.")
-        await show_catalogs(message, ct_sv)
-    else:
-        logger.warning(f"cant create user, [username={name}, tg_id={tg_id}]")
-        await message.answer(f"Что то пошло не так повторите попытку")
-        await state.set_state(AiUserState.chatting)
+    await state.set_state(AiUserState.chatting)

@@ -30,6 +30,9 @@ console_logger.setFormatter(formatter)
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.DEBUG)
 
+logging.getLogger("aiogram").setLevel(logging.WARNING)
+logging.getLogger("aiohttp").setLevel(logging.WARNING)
+
 #что бы случайно не повторить хендлер
 if not root_logger.handlers:
     root_logger.addHandler(app_logger)
