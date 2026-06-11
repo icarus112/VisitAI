@@ -25,7 +25,7 @@ class AIIntentService:
 - faq
 - unknown
 
-Поля:
+Поля при create_booking:
 - intent
 - catalog_query
 - date
