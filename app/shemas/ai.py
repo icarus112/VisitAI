@@ -15,6 +15,8 @@ class AIIntentBooking(BaseModel):
     ]
 
     catalog_query: str | None = None
+    search_keywords: list[str] = Field(default_factory=list)
+
     date: str | None = None
     time: str | None = None
     comment: str | None = None
@@ -40,3 +42,8 @@ class AIIntentCatalog(BaseModel):
 
     missing_fields: list[str] = []  # данные которые не хватают
     confidence: float = 0.0
+
+class AICatalogDescription(BaseModel):
+    description: str = Field(min_length=5, max_length=500)
+    keywords: list[str] = Field(default_factory=list, max_length=10)
+    client_phrases: list[str] = Field(default_factory=list, max_length=7)

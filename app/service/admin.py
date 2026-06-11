@@ -25,8 +25,6 @@ class AdminService:
         await self.ad_rp.set_admin(tg_id, name)
         logger.info(f"admin={name}, tg_id= {tg_id} get admin rights")
 
-
-
     async def get_ad_by_tg_id(self, tg_id: int) -> Admin | None:
         try:
             return await self.ad_rp.get_ad_by_tg_id(tg_id)

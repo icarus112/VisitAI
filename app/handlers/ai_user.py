@@ -6,52 +6,18 @@ import logging
 # from app.core import logger
 from app.core.states import CreateUserState, AiUserState, AIBookingCreate
 from app.handlers.record import send_booking_request
+from app.handlers.user import start_user_registration
 from app.service.admin import AdminService
-from app.core.ai_intent import AIIntentService
+from app.ai.ai_intent import AIIntentService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
 from app.core import keyboards as kb
 from app.service.user import UserService
 from app.resources import phrases
+from app.shemas.ai import AIIntentBooking
 
 router = Router()
 logger = logging.getLogger(__name__)
-
-async def continue_booking_flow(message: Message,
-                                state: FSMContext,
-                                ct_sv: CatalogService):
-    data = await state.get_data()
-
-    name = data.get('catalog_query')
-    date = data.get('date')
-    time = data.get('time')
-
-    if not name:
-        catalogs = await ct_sv.get_all()
-
-        question = phrases.ask_phrase(phrases.phrases_service)
-        await message.answer(question,
-        reply_markup=kb.catalog_keyboard(catalogs))
-        await state.set_state(AIBookingCreate.ask_name)
-        return False
-
-    if not date:
-
-        question = phrases.ask_phrase(phrases.phrases_date)
-
-        await message.answer(question)
-        await state.set_state(AIBookingCreate.ask_date)
-        return False
-
-    if not time:
-
-        question = phrases.ask_phrase(phrases.phrases_time)
-
-        await message.answer(question)
-        await state.set_state(AIBookingCreate.ask_time)
-        return False
-
-    return True
 
 @router.message(AIBookingCreate.ask_date)
 async def ask_booking_date(message: Message, state: FSMContext, ct_sv: CatalogService):
@@ -78,6 +44,7 @@ async def ask_booking_time(message: Message,
         await message.answer("вы ввели не правильное время попробуйте заново", reply_markup=kb.main)
         await state.clear()
         await state.set_state(AiUserState.chatting)
+        return
 
 
     time_str = time.strftime('%H:%M')
@@ -89,22 +56,56 @@ async def ask_booking_time(message: Message,
         await state.set_state(AiUserState.chatting)
         await confirm_booking(message, state)
 
-async def confirm_booking(message: Message, state: FSMContext):
-    data = await state.get_data()
+@router.message(AIBookingCreate.ask_name)
+async def ask_booking_name(message: Message,
+                           state: FSMContext,
+                           ct_sv: CatalogService):
 
-    name = data.get('catalog_query')
-    date = data.get('date')
-    time = data.get('time')
-    comment = data.get('comment')
+    catalog_query = message.text.strip()
+    if not message.text or message.text.strip():
+        await message.answer("прошу повторите запрос заново", reply_markup=kb.main)
+        await state.clear()
+        await state.set_state(AiUserState.chatting)
+        return
 
-    await message.answer(
-        f"Проверьте запись:\n\n"
-        f"Услуга: {name}\n"
-        f"Дата: {date}\n"
-        f"Время: {time}\n"
-        f"Комментарий: {comment or '-'}",
-        reply_markup=kb.confirm_ai_booking
+    await message.answer("простой поиск...")
+    bookings = await ct_sv.find_by_name(catalog_query)
+
+    if not bookings:
+        await message.answer("Включен умный поиск...")
+        bookings = await ct_sv.embedding_search_by_name(catalog_query)
+
+        if not bookings:
+            logger.info(
+                f"can't find catalog for name: {catalog_query}"
+            )
+            await message.answer("Я не нашёл такую услугу. Выберите услугу из списка", reply_markup=kb.main)
+            return
+
+    if len(bookings) > 1:
+        question = phrases.ask_phrase(phrases.similar_services)
+
+        await message.answer(
+            question,
+            reply_markup=kb.catalog_keyboard(bookings)
+        )
+
+        await state.set_state(AIBookingCreate.ask_name)
+        return
+
+    selected = bookings[0]
+
+    await state.update_data(
+        user_tg_id=message.from_user.id,
+        ct_id=selected.id,
+        catalog_query=selected.name
     )
+
+    is_ready = await continue_booking_flow(message, state, ct_sv)
+
+    if is_ready:
+        await state.set_state(AiUserState.chatting)
+        await confirm_booking(message, state)
 
 ''' на будущее при create_booking:
 1. поиск услуги, есть ли она
@@ -126,13 +127,7 @@ async def ai_record_handler(
     user = await us_sv.get_by_tg_id(message.from_user.id)
     if not user:
         #  у юзера может не быть юзернейма
-        name = message.from_user.username or message.from_user.first_name
-        await state.update_data(suggested_name=name)
-
-        await message.answer(f"Давайте познакомимся 😌\n\n"
-                             f"Можно обращаться к вам как {name}?",
-                             reply_markup=kb.authorization)
-        await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/user.py
+        await start_user_registration(message, state)
         return
 
     result = await ai_sv.parse_user_message(message.text)
@@ -148,100 +143,32 @@ async def ai_record_handler(
         return
 
     if result.intent == "create_booking":
-
-        catalog_query = result.catalog_query or ""
-        bookings = await ct_sv.find_by_name(catalog_query)
-
-        if not bookings:
-            logger.info(
-                f"can't find catalog for name: {catalog_query}"
-            )
-            await message.answer("Я не нашёл такую услугу. Выберите услугу из списка", reply_markup=kb.main)
-            return
-
-        if len(bookings) > 1:
-            question = phrases.ask_phrase(phrases.similar_services)
-
-            await message.answer(
-                question,
-                reply_markup=kb.catalog_keyboard(bookings)
-            )
-
-            await state.set_state(AIBookingCreate.ask_name)
-            return
-
-        selected = bookings[0]
-
-        await state.update_data(
-            user_tg_id=message.from_user.id,
-            ct_id=selected.id,
-            catalog_query=selected.name
-        )
-
-        booking_data = {}
-
-        if result.date:
-            booking_data["date"] = result.date
-
-        if result.time:
-            time_str = result.time
-
-            try:
-                time = bk_sv.parse_time(time_str)
-
-            except ValueError:
-                logger.exception(f"could not parse time={time_str}")
-                await message.answer("вы ввели не правильное время попробуйте заново", reply_markup=kb.main)
-                await state.clear()
-                await state.set_state(AiUserState.chatting)
-
-            time_str = time.strftime('%H:%M')
-
-            booking_data["time"] = result.time
-
-        if result.comment:
-            booking_data["comment"] = result.comment
-
-        await state.update_data(**booking_data)
-
-        is_ready = await continue_booking_flow(message, state, ct_sv)
-
-        if not is_ready:
-            return
-
-        await state.set_state(AiUserState.chatting)
-        await confirm_booking(message, state)
+        await ai_create_bk(message, state, result,
+                       ai_sv, ct_sv, us_sv, bk_sv)
 
 @router.callback_query(AIBookingCreate.ask_name, F.data.startswith("catalog:"))
-async def bk_select(callback: CallbackQuery, state: FSMContext,
-                    ct_sv: CatalogService):
-    ct_id = int(callback.data.split(":")[1].strip())
+async def choose_catalog(callback: CallbackQuery,
+                         state: FSMContext,
+                         ct_sv: CatalogService):
 
-    await callback.answer()
+    catalog_id = int(callback.data.split(":")[1])
+    catalog = await ct_sv.get_ct_by_id(catalog_id)
 
-    selected = await ct_sv.get_ct_by_id(ct_id)
-    if selected:
-        await callback.message.edit_text(f"вы выбрали \n{selected.name} - "
-                                         f"{selected.price} руб / {selected.duration} мин")
+    await callback.message.edit_reply_markup(reply_markup=None)
 
-        await state.update_data(
-            user_tg_id=callback.from_user.id,
-            ct_id=selected.id,
-            catalog_query=selected.name
-        )
+    await state.update_data(
+        user_tg_id=callback.from_user.id,
+        ct_id=catalog.id,
+        catalog_query=catalog.name
+    )
 
-        is_ready = await continue_booking_flow(callback.message, state, ct_sv)
+    await callback.message.answer(f"Выбрана услуга: {catalog.name}")
 
-        if not is_ready:
-            return
+    is_ready = await continue_booking_flow(callback.message, state, ct_sv)
 
+    if is_ready:
         await state.set_state(AiUserState.chatting)
         await confirm_booking(callback.message, state)
-
-    else:
-        logger.warning(f"can't find ct_id={ct_id}")
-        await callback.message.edit_text("Услуга не найдена")
-        await state.clear()
 
 
 @router.callback_query(AiUserState.chatting, F.data == "confirm_ai_booking")
@@ -272,8 +199,147 @@ async def cancel_ai_booking(
     data = await state.get_data()
     catalog_query = data.get('catalog_query')
 
+    await state.clear()
     await state.set_state(AiUserState.chatting)
     await callback.message.edit_text("❌ Создание записи отменено")
     logger.info(f"canceled booking| user_id= {callback.from_user.id}, ct_name= {catalog_query}")
     await callback.message.answer("Главное меню", reply_markup=kb.main)
 
+"""
+=================================================
+                   ЛОГИКА
+=================================================
+"""
+
+async def ai_create_bk(message: Message,
+                       state: FSMContext,
+                       result: AIIntentBooking,
+                       ai_sv: AIIntentService,
+                       ct_sv: CatalogService,
+                       us_sv: UserService,
+                       bk_sv: BookingService
+                       ):
+    catalog_query = (result.catalog_query or "").strip()
+    keywords = result.search_keywords or []
+
+    if not catalog_query and not keywords:
+        question = phrases.ask_phrase(phrases.phrases_service)
+        await message.answer(question)
+        await state.set_state(AIBookingCreate.ask_name)
+        return
+
+    bookings = await ct_sv.find_by_name(catalog_query)
+
+    if not bookings:
+        await message.answer("Включен умный поиск...")
+        bookings = await ct_sv.embedding_search(result)
+
+        if not bookings:
+            logger.info(
+                f"can't find catalog for name: {catalog_query}"
+            )
+            await message.answer("Я не нашёл такую услугу. Выберите услугу из списка", reply_markup=kb.main)
+            return
+
+    if len(bookings) > 1:
+        question = phrases.ask_phrase(phrases.similar_services)
+
+        await message.answer(
+            question,
+            reply_markup=kb.catalog_keyboard(bookings)
+        )
+
+        await state.set_state(AIBookingCreate.ask_name)
+        return
+
+    selected = bookings[0]
+
+    await state.update_data(
+        user_tg_id=message.from_user.id,
+        ct_id=selected.id,
+        catalog_query=selected.name
+    )
+
+    booking_data = {}
+
+    if result.date:
+        booking_data["date"] = result.date
+
+    if result.time:
+        time_str = result.time
+
+        try:
+            time = bk_sv.parse_time(time_str)
+
+        except ValueError:
+            logger.exception(f"could not parse time={time_str}")
+            await message.answer("вы ввели не правильное время попробуйте заново", reply_markup=kb.main)
+            await state.clear()
+            await state.set_state(AiUserState.chatting)
+
+        time_str = time.strftime('%H:%M')
+
+        booking_data["time"] = time_str
+
+    if result.comment:
+        booking_data["comment"] = result.comment
+
+    await state.update_data(**booking_data)
+
+    is_ready = await continue_booking_flow(message, state, ct_sv)
+
+    if not is_ready:
+        return
+
+    await state.set_state(AiUserState.chatting)
+    await confirm_booking(message, state)
+
+async def confirm_booking(message: Message, state: FSMContext):
+    data = await state.get_data()
+
+    name = data.get('catalog_query')
+    date = data.get('date')
+    time = data.get('time')
+    comment = data.get('comment')
+
+    await message.answer(
+        f"Проверьте запись:\n\n"
+        f"Услуга: {name}\n"
+        f"Дата: {date}\n"
+        f"Время: {time}\n"
+        f"Комментарий: {comment or '-'}",
+        reply_markup=kb.confirm_ai_booking
+    )
+
+async def continue_booking_flow(message: Message,
+                                state: FSMContext,
+                                ct_sv: CatalogService):
+    data = await state.get_data()
+
+    name = data.get('catalog_query')
+    date = data.get('date')
+    time = data.get('time')
+
+    if not name:
+
+        question = phrases.ask_phrase(phrases.phrases_service)
+        await message.answer(question)
+        await state.set_state(AIBookingCreate.ask_name)
+        return False
+
+    if not date:
+        question = phrases.ask_phrase(phrases.phrases_date)
+
+        await message.answer(question)
+        await state.set_state(AIBookingCreate.ask_date)
+        return False
+
+    if not time:
+
+        question = phrases.ask_phrase(phrases.phrases_time)
+
+        await message.answer(question)
+        await state.set_state(AIBookingCreate.ask_time)
+        return False
+
+    return True

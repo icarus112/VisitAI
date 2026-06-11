@@ -2,8 +2,8 @@ from typing import Dict, Any, Callable
 from aiogram.types import TelegramObject
 from aiogram import BaseMiddleware
 
-from app.core.ai_intent import AIIntentService
-from conf import AI_API
+from app.ai.ai_intent import AIIntentService
+from app.service.embedding import EmbeddingService
 from app.repository.admin import AdminRepos
 from app.repository.booking import BookingRepos
 from app.repository.catalog import CatalogRepos
@@ -15,8 +15,13 @@ from app.service.user import UserService
 
 # создание сессии, и дать доступ к нему классам которые написаны ниже
 class AppMiddleware(BaseMiddleware):
-    def __init__(self, async_session):
+    def __init__(self, async_session,
+                 em_sv: EmbeddingService,
+                 ai_sv: AIIntentService):
         self.async_session = async_session
+        self.em_sv = em_sv
+        self.ai_sv = ai_sv
+
 
     async def __call__(self, handler: Callable,
                        event: TelegramObject,
@@ -33,13 +38,14 @@ class AppMiddleware(BaseMiddleware):
                 bk_rp = BookingRepos(session)
 
                 # service
+                data["em_sv"] = self.em_sv
+                data["ai_sv"] = self.ai_sv
+
                 data["us_sv"] = UserService(us_rp)
                 data["ad_sv"] = AdminService(ad_rp)
-                data["ct_sv"] = CatalogService(ct_rp)
+                data["ct_sv"] = CatalogService(ct_rp,
+                                               self.em_sv)
                 data["bk_sv"] = BookingService(bk_rp, us_rp, ct_rp)
-                data["ai_sv"] = AIIntentService(
-                    api_key=AI_API
-                )
 
                 result = await handler(event, data)
                 await session.commit()

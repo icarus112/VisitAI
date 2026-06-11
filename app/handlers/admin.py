@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 import logging
 
+from app.ai.ai_intent import AIIntentService
 from logs import logger
 from app.core import keyboards as kb
 from app.core.states import AdminState, CatalogSetState, AiAdminState
@@ -128,16 +129,22 @@ async def get_price(message: Message, state: FSMContext):
     await state.set_state(CatalogSetState.create)
 
 @router.message(CatalogSetState.create, IsAdmin())
-async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogService):
+async def create_catalog(message: Message,
+                         state: FSMContext,
+                         ct_sv: CatalogService,
+                         ai_sv: AIIntentService):
     duration = message.text.strip()
 
     data = await state.get_data()  # сохряняем все данные FSM в виде словаря
     name = data.get("name")
     price = data.get("price")
     ad_tg_id = message.from_user.id
+    await message.answer("Создание описания...")
+    ai_res = await ai_sv.create_description(name)
+    await message.answer("Описание создано")
 
     try:
-        catalog = await ct_sv.create_ct(name, price, duration, ad_tg_id)
+        catalog = await ct_sv.create_ct(name, price, duration, ad_tg_id, ai_res)
     except Exception as e:
         logger.exception(f"admin tg id={ad_tg_id} can't create catalog {name}")
         await message.answer(f"❌ {e}\n\n что то пошло не так при вводе данных", reply_markup=kb.admin)
@@ -148,7 +155,10 @@ async def create_catalog(message: Message, state: FSMContext, ct_sv: CatalogServ
                          f"id: {catalog.id}\n"
                          f"название: {catalog.name}\n"
                          f"цена: {catalog.price} руб\n"
-                         f"продолжительность: {catalog.duration} мин", reply_markup=kb.admin)
+                         f"продолжительность: {catalog.duration} мин\n"
+                         f"Описание: {catalog.description}\n"
+                         f"Ключевые слова: {catalog.keywords}\n"
+                         f"Фразы: {catalog.client_phrases}", reply_markup=kb.admin)
     await state.set_state(AiAdminState.chatting)
 
 @router.message(F.text == "Удалить администратора", IsSuperAdmin())

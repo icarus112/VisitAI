@@ -1,7 +1,7 @@
 from typing import List
 from unittest import result
 
-from sqlalchemy import select
+from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shemas import catalog
@@ -13,19 +13,14 @@ class CatalogRepos:
     def __init__(self, session):
         self.session = session
 
-    async def create_ct(self, add_catalog: CatalogCreate) -> CatalogResponse:
-        catalog = Catalog(**add_catalog.model_dump())
+    async def create_ct(self, add_catalog: CatalogCreate, embedding: list[float]) -> CatalogResponse:
+        catalog = Catalog(**add_catalog.model_dump(), embedding=embedding)
 
         self.session.add(catalog)
         await self.session.flush()
         await self.session.refresh(catalog)
 
-        result = CatalogResponse(
-            id=catalog.id,
-            name=catalog.name,
-            price=catalog.price,
-            duration=catalog.duration
-        )
+        result = CatalogResponse.model_validate(catalog)
 
         return result
 
@@ -44,12 +39,40 @@ class CatalogRepos:
         catalog = result.scalar_one_or_none()
         return catalog
 
-    async def find_by_name(self, query: str) -> List[Catalog]:
+    async def find_ilike(self, query: str) -> List[Catalog]:
         stmt = (select(Catalog)
                 .where(Catalog.name.ilike( f"%{query}%"))
                 )
         result = await self.session.execute(stmt)
-        catalogs = result.scalars().all()
+        catalogs = list(result.scalars().all())
 
         return catalogs
 
+# вернут 5 самых схожих названий через similarity
+    async def find_name_fuzzy(self, query: str) -> List[Catalog]:
+        similarity = func.similarity(Catalog.name, query)
+
+        stmt = (
+            select(Catalog)
+            .where(similarity > 0.3)
+            .order_by(desc(similarity))
+            .limit(5)
+            )
+
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def embedding_search(self,
+                               query_vector: list[float],
+                               limit: int = 5):
+        distance = Catalog.embedding.cosine_distance(query_vector).label("distance")
+
+        stmt = (
+            select(Catalog, distance)
+            .where(Catalog.embedding.is_not(None))
+            .order_by(distance)
+            .limit(limit)
+        )
+
+        result = await self.session.execute(stmt)
+        return result.all()

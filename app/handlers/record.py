@@ -5,6 +5,7 @@ import logging
 
 from app.core import keyboards as kb
 from app.core.states import CreateUserState, Requests, AiUserState
+from app.handlers.user import start_user_registration
 from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
@@ -29,13 +30,7 @@ async def add_record(message: Message, state: FSMContext,
     user = await us_sv.get_by_tg_id(message.from_user.id)
     if not user:
         #  у юзера может не быть юзернейма
-        name = message.from_user.username or message.from_user.first_name
-        await state.update_data(suggested_name=name)
-
-        await message.answer(f"Давайте познакомимся 😌\n\n"
-                            f"Можно обращаться к вам как {name}?",
-                             reply_markup=kb.authorization)
-        await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/user.py
+        await start_user_registration(message, state)
         return
 
     await state.set_state(Requests.choose_ct)
@@ -299,7 +294,31 @@ async def without_pay(callback: CallbackQuery,
     await callback.message.answer("Главное меню", reply_markup=kb.main)
     await state.set_state(AiUserState.chatting)
 
+"""=================================================================
+                               МОИ ЗАПИСИ
+====================================================================
+"""
 
+@router.message(F.text == "👤Мои записи")
+async def my_booking(message: Message,
+                     state: FSMContext,
+                     us_sv: UserService,
+                     bk_sv: BookingService):
+    await state.clear()
+    user = await us_sv.get_by_tg_id(message.from_user.id)
 
+    if user is None:
+        #  у юзера может не быть юзернейма
+        name = message.from_user.username or message.from_user.first_name
+        await state.update_data(suggested_name=name)
 
+        await message.answer(f"Давайте познакомимся 😌\n\n"
+                            f"Можно обращаться к вам как {name}?",
+                             reply_markup=kb.authorization)
+        await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/user.py
+        return
 
+    my_bks = await bk_sv.my_bk_info(user.id)
+    await state.set_state(AiUserState.chatting)
+    await message.answer(my_bks)
+    await message.answer("Главное меню",  reply_markup=kb.main)

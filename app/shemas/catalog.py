@@ -1,11 +1,19 @@
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, model_validator, field_validator
+from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
+
 
 class CatalogCreate(BaseModel):
     name: str = Field(..., max_length=127)
     price: Decimal
     duration: int
+
+    description: str
+    keywords: list[str] = Field(default_factory=list)
+    client_phrases: list[str] = Field(default_factory=list)
+
+    def to_list(self) -> list:
+        return [self.name, self.price, self.duration]
 
     @field_validator("price")
     def price_must_be_positive(cls, v: Decimal):
@@ -35,3 +43,15 @@ class CatalogResponse(BaseModel):
     name: str
     price: Decimal
     duration: int
+
+    description: str
+    keywords: list[str] = Field(default_factory=list)
+    client_phrases: list[str] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CatalogList(BaseModel):
+    item: list[CatalogCreate]
+
+    def __iter__(self):
+        return iter(self.item)

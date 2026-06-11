@@ -1,16 +1,13 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-import traceback
 import logging
-
-from openai.types.beta.threads import message
 
 # from app.core import logger
 from app.core.filtres import IsAdmin
 from app.core.states import AiAdminState
 from app.service.admin import AdminService
-from app.core.ai_intent import AIIntentService
+from app.ai.ai_intent import AIIntentService
 from app.service.catalog import CatalogService
 from app.core import keyboards as kb
 
@@ -75,16 +72,17 @@ async def confirm_ai_create_ct(
     price_str = data.get("price")
     duration_str = data.get("duration")
 
+    await callback.message.edit_reply_markup(reply_markup=None)
+
     try:
         catalog = await ct_sv.create_ct(name, price_str, duration_str, callback.from_user.id)
-    except Exception as e:
-        await callback.message.edit_text(f"❌ что то пошло не так при вводе данных", reply_markup=kb.admin)
+    except Exception:
+        await callback.message.answer(f"❌ что то пошло не так при вводе данных", reply_markup=kb.admin)
         logger.exception(f"admin= {callback.from_user.id} can't create catalog")
         await state.set_state(AiAdminState.chatting)
-        return
+        raise
 
-
-    await callback.message.edit_text(f"Создана новая услуга:\n\n"
+    await callback.message.answer(f"Создана новая услуга:\n\n"
                          f"id: {catalog.id}\n"
                          f"название: {catalog.name}\n"
                          f"цена: {catalog.price} руб\n"

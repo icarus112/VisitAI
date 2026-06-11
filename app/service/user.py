@@ -18,10 +18,17 @@ class UserService:
                               phone=phone)
 
             created_user= await self.us_rp.create_user(user)
-            logging.info(f"Created user: id={created_user.id}, name={created_user.name}, tg_id={created_user.tg_id}")
-
+            logger.info(
+                "Created user successfully: id=%r, name=%r, tg_id=%r",
+                created_user.id,
+                created_user.name,
+                created_user.tg_id,
+            )
         except Exception:
             logger.exception(
-                f"Failed to create user tg_id={tg_id}"
+                "Service failed to create user: name=%r, tg_id=%r, phone=%r",
+                name,
+                tg_id,
+                phone,
             )
-            return False
+            raise
