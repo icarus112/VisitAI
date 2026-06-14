@@ -113,3 +113,13 @@ class PayHistory(Base):
     def __repr__(self):
         return(f"<PayHistory: id={self.id}, booking_id={self.booking_id},"
                f"payed_at={self.payed_at}, amount={self.amount}>")
+
+class FAQ(Base):
+    __tablename__ = "faqs"
+
+    id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
+    question: Mapped[str] = mapped_column(TEXT, nullable=False)
+    keywords: Mapped[list[str]] = mapped_column(JSON, nullable=False)
+    answer: Mapped[str] = mapped_column(TEXT, nullable=False)
+
+
