@@ -31,6 +31,24 @@ class CatalogRepos:
         catalogs = results.scalars().all()
         return catalogs
 
+    async def count_ct(self) -> int:
+        stmt = (select(func.count(Catalog.id)))
+        result = await self.session.execute(stmt)
+        return result.scalar_one()
+
+    async def get_ct_page(self, page: int, per_page: int = 5) -> list[Catalog]:
+        offset = page * per_page
+
+        stmt = (
+            select(Catalog)
+            .order_by(Catalog.id)
+            .limit(per_page)
+            .offset(offset) # пропустить заданное кол-во строк перед работой
+        )
+
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
     async def get_ct_by_id(self, id: int) -> Catalog:
         stmt = (select(Catalog)
                 .where(Catalog.id == id))

@@ -3824,3 +3824,848 @@ RuntimeError: Cannot send a request, as the client has been closed.
 2026-06-12 02:46:03,947 | INFO | app.service.booking | forwarded new booking=стрижка мужская, ct_id:6 by user=2 to admin 
 2026-06-12 02:46:15,421 | INFO | app.service.booking | booking received without online payment, booking_id=2
 2026-06-12 02:46:28,382 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-15 14:05:07,137 | INFO | __main__ | Proxy disabled
+2026-06-15 14:05:07,749 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-15 14:05:07,865 | INFO | __main__ | Webhook deleted successfully
+2026-06-15 14:05:07,865 | INFO | __main__ | Bot started
+2026-06-15 14:06:09,173 | INFO | app.service.user | Created user successfully: id=1, name='Sanjar_sh', tg_id=6480514308
+2026-06-15 14:06:20,735 | INFO | openai._base_client | Retrying request to /chat/completions in 0.404158 seconds
+2026-06-15 14:06:26,896 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:06:28,036 | ERROR | aiogram.event | Cause exception while process update id=78298902 by bot id=8635000285
+TypeError: handle_faq() takes 3 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/middlewares.py", line 54, in __call__
+    result = await handler(event, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/ai_user.py", line 158, in ai_record_handler
+    await handle_faq(message, state, result, faq_sv)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: handle_faq() takes 3 positional arguments but 4 were given
+2026-06-15 14:07:02,239 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-15 14:07:15,373 | INFO | __main__ | Proxy disabled
+2026-06-15 14:07:15,841 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-15 14:07:15,928 | INFO | __main__ | Webhook deleted successfully
+2026-06-15 14:07:15,928 | INFO | __main__ | Bot started
+2026-06-15 14:07:23,206 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:07:24,036 | WARNING | app.handlers.ai_user | Unknown user request for ai: user= 6480514308 text= паукап
+2026-06-15 14:09:00,777 | INFO | app.service.booking | forwarded new booking=Наращивание ресниц, ct_id:4 by user=1 to admin 
+2026-06-15 14:09:25,238 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:09:42,159 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-15 14:16:57,295 | INFO | __main__ | Proxy disabled
+2026-06-15 14:16:57,683 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-15 14:16:57,778 | INFO | __main__ | Webhook deleted successfully
+2026-06-15 14:16:57,778 | INFO | __main__ | Bot started
+2026-06-15 14:17:22,204 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:17:22,933 | WARNING | app.handlers.ai_user | Unknown user request for ai: user= 6480514308 text= vfdg
+2026-06-15 14:17:30,915 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-15 14:21:40,637 | INFO | __main__ | Proxy disabled
+2026-06-15 14:21:40,711 | WARNING | __main__ | Telegram API unavailable. Attempt 1. Retry in 5 sec
+2026-06-15 14:21:45,764 | WARNING | __main__ | Telegram API unavailable. Attempt 2. Retry in 5 sec
+2026-06-15 14:21:50,824 | WARNING | __main__ | Telegram API unavailable. Attempt 3. Retry in 5 sec
+2026-06-15 14:21:55,881 | WARNING | __main__ | Telegram API unavailable. Attempt 4. Retry in 5 sec
+2026-06-15 14:22:00,941 | WARNING | __main__ | Telegram API unavailable. Attempt 5. Retry in 5 sec
+2026-06-15 14:22:04,655 | INFO | __main__ | Bot stopped by KeyboardInterrupt
+2026-06-15 14:22:23,724 | INFO | __main__ | Proxy disabled
+2026-06-15 14:22:24,324 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-15 14:22:24,426 | INFO | __main__ | Webhook deleted successfully
+2026-06-15 14:22:24,427 | INFO | __main__ | Bot started
+2026-06-15 14:22:34,354 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:22:35,604 | ERROR | aiogram.event | Cause exception while process update id=78298919 by bot id=8635000285
+ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+[SQL: SELECT faqs.id, faqs.question, faqs.keywords, faqs.answer, faqs.search_text 
+FROM faqs 
+WHERE similarity(faqs.search_text, $1::VARCHAR) > $2::FLOAT ORDER BY similarity(faqs.search_text, $1::VARCHAR) DESC]
+[parameters: ('могу ли я узнать какой у вас график работы  график работы часы работы режим', 0.3)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 526, in _prepare_and_execute
+    prepared_stmt, attributes = await adapt_connection._prepare(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 773, in _prepare
+    prepared_stmt = await self._connection.prepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 638, in prepare
+    return await self._prepare(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 657, in _prepare
+    stmt = await self._get_statement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 443, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.UndefinedFunctionError: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.ProgrammingError: <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/middlewares.py", line 54, in __call__
+    result = await handler(event, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/ai_user.py", line 158, in ai_record_handler
+    await handle_faq(message, result, faq_sv)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/flows/users.py", line 156, in handle_faq
+    answer = await faq_sv.find_answer(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/service/faq.py", line 14, in find_answer
+    answer = await self.faq_rp.find_answer(query)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/repository/faq.py", line 35, in find_answer
+    result = await self.session.execute(stmt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 449, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+[SQL: SELECT faqs.id, faqs.question, faqs.keywords, faqs.answer, faqs.search_text 
+FROM faqs 
+WHERE similarity(faqs.search_text, $1::VARCHAR) > $2::FLOAT ORDER BY similarity(faqs.search_text, $1::VARCHAR) DESC]
+[parameters: ('могу ли я узнать какой у вас график работы  график работы часы работы режим', 0.3)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-06-15 14:23:20,106 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-15 14:27:19,293 | INFO | __main__ | Proxy disabled
+2026-06-15 14:27:19,839 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-15 14:27:19,954 | INFO | __main__ | Webhook deleted successfully
+2026-06-15 14:27:19,954 | INFO | __main__ | Bot started
+2026-06-15 14:27:29,565 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:27:30,507 | ERROR | aiogram.event | Cause exception while process update id=78298921 by bot id=8635000285
+ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+[SQL: SELECT faqs.id, faqs.question, faqs.keywords, faqs.answer, faqs.search_text 
+FROM faqs 
+WHERE similarity(faqs.search_text, $1::VARCHAR) > $2::FLOAT ORDER BY similarity(faqs.search_text, $1::VARCHAR) DESC 
+ LIMIT $3::INTEGER]
+[parameters: ('могу ли я узнать какой у вас график работы  график работы часы работы режим', 0.3, 1)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 526, in _prepare_and_execute
+    prepared_stmt, attributes = await adapt_connection._prepare(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 773, in _prepare
+    prepared_stmt = await self._connection.prepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 638, in prepare
+    return await self._prepare(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 657, in _prepare
+    stmt = await self._get_statement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 443, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.UndefinedFunctionError: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.ProgrammingError: <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/middlewares.py", line 54, in __call__
+    result = await handler(event, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/ai_user.py", line 158, in ai_record_handler
+    await handle_faq(message, result, faq_sv)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/flows/users.py", line 156, in handle_faq
+    answer = await faq_sv.find_answer(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/service/faq.py", line 14, in find_answer
+    faq = await self.faq_rp.find_answer(query)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/repository/faq.py", line 36, in find_answer
+    result = await self.session.execute(stmt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 449, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+[SQL: SELECT faqs.id, faqs.question, faqs.keywords, faqs.answer, faqs.search_text 
+FROM faqs 
+WHERE similarity(faqs.search_text, $1::VARCHAR) > $2::FLOAT ORDER BY similarity(faqs.search_text, $1::VARCHAR) DESC 
+ LIMIT $3::INTEGER]
+[parameters: ('могу ли я узнать какой у вас график работы  график работы часы работы режим', 0.3, 1)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-06-15 14:28:05,538 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-15 14:28:18,256 | INFO | __main__ | Proxy disabled
+2026-06-15 14:28:18,974 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-15 14:28:19,060 | INFO | __main__ | Webhook deleted successfully
+2026-06-15 14:28:19,060 | INFO | __main__ | Bot started
+2026-06-15 14:28:24,621 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:28:25,668 | ERROR | aiogram.event | Cause exception while process update id=78298923 by bot id=8635000285
+ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+[SQL: SELECT faqs.id, faqs.question, faqs.keywords, faqs.answer, faqs.search_text 
+FROM faqs 
+WHERE similarity(faqs.search_text, $1::VARCHAR) > $2::FLOAT ORDER BY similarity(faqs.search_text, $1::VARCHAR) DESC]
+[parameters: ('могу ли я узнать какой у вас график работы  график работы часы работы режим', 0.3)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 526, in _prepare_and_execute
+    prepared_stmt, attributes = await adapt_connection._prepare(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 773, in _prepare
+    prepared_stmt = await self._connection.prepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 638, in prepare
+    return await self._prepare(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 657, in _prepare
+    stmt = await self._get_statement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/asyncpg/connection.py", line 443, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.UndefinedFunctionError: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.ProgrammingError: <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/middlewares.py", line 54, in __call__
+    result = await handler(event, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/ai_user.py", line 158, in ai_record_handler
+    await handle_faq(message, result, faq_sv)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/flows/users.py", line 156, in handle_faq
+    answer = await faq_sv.find_answer(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/service/faq.py", line 14, in find_answer
+    faq = await self.faq_rp.find_answer(query)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/repository/faq.py", line 36, in find_answer
+    result = await self.session.execute(stmt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/ext/asyncio/session.py", line 449, in execute
+    result = await greenlet_spawn(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 563, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 513, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 797, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedFunctionError'>: function similarity(text, character varying) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+[SQL: SELECT faqs.id, faqs.question, faqs.keywords, faqs.answer, faqs.search_text 
+FROM faqs 
+WHERE similarity(faqs.search_text, $1::VARCHAR) > $2::FLOAT ORDER BY similarity(faqs.search_text, $1::VARCHAR) DESC]
+[parameters: ('могу ли я узнать какой у вас график работы  график работы часы работы режим', 0.3)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-06-15 14:28:35,621 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-15 14:38:13,651 | INFO | __main__ | Proxy disabled
+2026-06-15 14:38:14,519 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-15 14:38:14,615 | INFO | __main__ | Webhook deleted successfully
+2026-06-15 14:38:14,615 | INFO | __main__ | Bot started
+2026-06-15 14:38:29,686 | INFO | app.service.user | Created user successfully: id=1, name='Sanjar_sh', tg_id=6480514308
+2026-06-15 14:38:37,034 | INFO | openai._base_client | Retrying request to /chat/completions in 0.488840 seconds
+2026-06-15 14:38:39,300 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:38:49,313 | INFO | httpx | HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-06-15 14:38:50,360 | WARNING | app.handlers.ai_user | Unknown user request for ai: user= 6480514308 text= мвымвы
+2026-06-15 14:39:00,052 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-16 00:08:14,309 | INFO | __main__ | Proxy disabled
+2026-06-16 00:08:14,699 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-16 00:08:14,781 | INFO | __main__ | Webhook deleted successfully
+2026-06-16 00:08:14,781 | INFO | __main__ | Bot started
+2026-06-16 00:08:37,234 | ERROR | aiogram.event | Cause exception while process update id=78298931 by bot id=8635000285
+ValidationError: 13 validation errors for InlineKeyboardMarkup
+inline_keyboard.6.0
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('text', '☰ Главное меню'), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.1
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('icon_custom_emoji_id', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.2
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('style', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.3
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('url', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.4
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('callback_data', 'to_main'), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.5
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('web_app', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.6
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('login_url', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.7
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('switch_inline_query', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.8
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('switch_inline_query_current_chat', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.9
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('switch_inline_query_chosen_chat', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.10
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('copy_text', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.11
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('callback_game', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.12
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('pay', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 320, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 283, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/middlewares.py", line 54, in __call__
+    result = await handler(event, data)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 191, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 163, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 155, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/router.py", line 183, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/handlers/record.py", line 345, in open_ct
+    reply_markup=kb.ct_page_kb(cts, page, total_pages)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/app/core/keyboards.py", line 159, in ct_page_kb
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/pydantic/main.py", line 250, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 13 validation errors for InlineKeyboardMarkup
+inline_keyboard.6.0
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('text', '☰ Главное меню'), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.1
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('icon_custom_emoji_id', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.2
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('style', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.3
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('url', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.4
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('callback_data', 'to_main'), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.5
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('web_app', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.6
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('login_url', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.7
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('switch_inline_query', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.8
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('switch_inline_query_current_chat', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.9
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('switch_inline_query_chosen_chat', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.10
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('copy_text', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.11
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('callback_game', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+inline_keyboard.6.12
+  Input should be a valid dictionary or instance of InlineKeyboardButton [type=model_type, input_value=('pay', None), input_type=tuple]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+2026-06-16 00:09:57,439 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-16 00:12:28,101 | INFO | __main__ | Proxy disabled
+2026-06-16 00:12:28,653 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-16 00:12:28,739 | INFO | __main__ | Webhook deleted successfully
+2026-06-16 00:12:28,739 | INFO | __main__ | Bot started
+2026-06-16 00:13:09,023 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-16 00:13:44,394 | INFO | __main__ | Proxy disabled
+2026-06-16 00:13:44,855 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-16 00:13:44,936 | INFO | __main__ | Webhook deleted successfully
+2026-06-16 00:13:44,936 | INFO | __main__ | Bot started
+2026-06-16 00:16:00,981 | WARNING | aiogram.dispatcher | Received SIGINT signal
+2026-06-16 00:19:42,238 | INFO | __main__ | Proxy disabled
+2026-06-16 00:19:42,676 | INFO | __main__ | Telegram API is available. Bot username=VisiterMaster794_Bot, id=8635000285
+2026-06-16 00:19:42,797 | INFO | __main__ | Webhook deleted successfully
+2026-06-16 00:19:42,797 | INFO | __main__ | Bot started
+2026-06-16 00:19:56,487 | WARNING | aiogram.dispatcher | Received SIGINT signal

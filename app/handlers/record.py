@@ -5,7 +5,7 @@ import logging
 
 from app.core import keyboards as kb
 from app.core.states import CreateUserState, Requests, AiUserState
-from app.handlers.user import start_user_registration
+from app.flows.users import start_user_registration
 from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
@@ -33,16 +33,42 @@ async def add_record(message: Message, state: FSMContext,
         await start_user_registration(message, state)
         return
 
-    await state.set_state(Requests.choose_ct)
-    await show_catalogs(message, ct_sv)
+    cts, page, total_pages = await ct_sv.page_data(page=0)
 
-async def show_catalogs(message: Message, ct_sv: CatalogService):
-    catalogs = await ct_sv.get_all()
+    if not cts:
+        await message.answer("Каталог пока пуст.")
+        logger.warning("cant get cts for 📂 Каталог услуг")
+        return
 
     await message.answer(
-        "😌 Давайте выберем услугу",
-        reply_markup=kb.catalog_keyboard(catalogs)
+        f"📂 Каталог услуг\n\nСтраница {page + 1}/{total_pages}",
+        reply_markup=kb.ct_page_kb(cts, page, total_pages)
     )
+
+    await state.set_state(Requests.choose_ct)
+
+@router.callback_query(F.data.startswith("ct_page:"))
+async def nav_btn(callback: CallbackQuery,
+                  ct_sv: CatalogService,
+                  state: FSMContext):
+    page = int(callback.data.split(":")[1])
+
+    cts, page, total_pages = await ct_sv.page_data(page=page)
+
+    await callback.message.edit_text(
+        f"📂 Каталог услуг\n\nСтраница {page + 1}/{total_pages}",
+        reply_markup=kb.ct_page_kb(cts, page, total_pages)
+    )
+
+    await callback.answer()
+    await state.set_state(Requests.choose_ct)
+
+@router.callback_query(F.data.startswith("to_main"))
+async def to_main_menu(callback: CallbackQuery,
+                       state: FSMContext):
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.answer("Назад в главное меню", reply_markup=kb.main)
+    await state.set_state(AiUserState.chatting)
 
 @router.callback_query(Requests.choose_ct, F.data.startswith("catalog:"))
 async def ct_select(callback: CallbackQuery,
@@ -315,10 +341,73 @@ async def my_booking(message: Message,
         await message.answer(f"Давайте познакомимся 😌\n\n"
                             f"Можно обращаться к вам как {name}?",
                              reply_markup=kb.authorization)
-        await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/user.py
+        await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/users.py
         return
 
     my_bks = await bk_sv.my_bk_info(user.id)
     await state.set_state(AiUserState.chatting)
     await message.answer(my_bks)
     await message.answer("Главное меню",  reply_markup=kb.main)
+
+# # "📂 Каталог услуг"
+# """=================================================================
+#                                Каталог услуг
+# ====================================================================
+# """
+#
+# @router.message(F.text == "📂 Каталог услуг")
+# async def open_ct(message: Message,
+#                   ct_sv: CatalogService,
+#                   state: FSMContext,
+#                   us_sv: UserService):
+#     await state.clear()
+#     user = await us_sv.get_by_tg_id(message.from_user.id)
+#
+#     if user is None:
+#         #  у юзера может не быть юзернейма
+#         name = message.from_user.username or message.from_user.first_name
+#         await state.update_data(suggested_name=name)
+#
+#         await message.answer(f"Давайте познакомимся 😌\n\n"
+#                              f"Можно обращаться к вам как {name}?",
+#                              reply_markup=kb.authorization)
+#         await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/users.py
+#         return
+#     cts, page, total_pages = await ct_sv.page_data(page=0)
+#
+#     if not cts:
+#         await message.answer("Каталог пока пуст.")
+#         logger.warning("cant get cts for 📂 Каталог услуг")
+#         return
+#
+#     await message.answer(
+#         f"📂 Каталог услуг\n\nСтраница {page + 1}/{total_pages}",
+#         reply_markup=kb.ct_page_kb(cts, page, total_pages)
+#     )
+#
+#     await state.set_state(Requests.choose_ct)
+#
+#
+# @router.callback_query(F.data.startswith("ct_page:"))
+# async def nav_btn(callback: CallbackQuery,
+#                   ct_sv: CatalogService,
+#                   state: FSMContext):
+#     page = int(callback.data.split(":")[1])
+#
+#     cts, page, total_pages = await ct_sv.page_data(page=page)
+#
+#     await callback.message.edit_text(
+#         f"📂 Каталог услуг\n\nСтраница {page + 1}/{total_pages}",
+#         reply_markup=kb.ct_page_kb(cts, page, total_pages)
+#     )
+#
+#     await callback.answer()
+#     await state.set_state(Requests.choose_ct)
+#
+# @router.callback_query(F.data.startswith("to_main"))
+# async def to_main_menu(callback: CallbackQuery,
+#                        state: FSMContext):
+#     await callback.message.edit_reply_markup(reply_markup=None)
+#     await callback.message.answer("Назад в главное меню", reply_markup=kb.main)
+#     await state.set_state(AiUserState.chatting)
+

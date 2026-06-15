@@ -13,7 +13,7 @@ class CatalogCreate(BaseModel):
     client_phrases: list[str] = Field(default_factory=list)
 
     def to_list(self) -> list:
-        return [self.name, self.price, self.duration]
+        return [self.name, self.price, self.duration, self.description, self.keywords, self.client_phrases]
 
     @field_validator("price")
     def price_must_be_positive(cls, v: Decimal):
@@ -35,6 +35,31 @@ class CatalogCreate(BaseModel):
 
         if not v:
             raise ValueError("name can't be empty")
+
+        return v
+
+    @field_validator("description")
+    def description_not_empty(cls, v: str) -> str:
+        v = v.strip()
+
+        if not v:
+            raise ValueError("description can't be empty")
+
+        return v
+
+    @field_validator("keywords")
+    def keywords_not_empty(cls, v: str) -> str:
+
+        if not v:
+            raise ValueError("keywords can't be empty")
+
+        return v
+
+    @field_validator("client_phrases")
+    def client_phrases_not_empty(cls, v: str) -> str:
+
+        if not v:
+            raise ValueError("client_phrases can't be empty")
 
         return v
 

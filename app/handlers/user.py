@@ -16,16 +16,6 @@ logger = logging.getLogger(__name__)
                                      ЕСЛИ ЮЗЕР НЕ АВТОРИЗОВАН
 ========================================================================================
 '''
-
-async def start_user_registration(message: Message, state: FSMContext):
-    name = (message.from_user.first_name or message.from_user.username).strip()
-    await state.update_data(suggested_name=name)
-
-    await message.answer(f"Давайте познакомимся 😌\n\n"
-                         f"Можно обращаться к вам как {name}?",
-                         reply_markup=kb.authorization)
-    await state.set_state(CreateUserState.ask_name)
-
 @router.callback_query(F.data == "accept_name", CreateUserState.ask_name)
 async def accept_name(callback: CallbackQuery, state: FSMContext):
     # await callback.message.edit_reply_markup(reply_markup=None)  # убрали кнопки

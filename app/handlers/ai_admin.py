@@ -14,7 +14,7 @@ from app.core import keyboards as kb
 router = Router()
 logger = logging.getLogger(__name__)
 
-@router.message(IsAdmin(), AiAdminState.chatting)
+@router.message(AiAdminState.chatting, IsAdmin())
 async def ai_create_catalog(
         message: Message,
         state: FSMContext,
@@ -60,7 +60,7 @@ async def ai_create_catalog(
             reply_markup=kb.confirm_ai_create_ct
         )
 
-@router.callback_query(IsAdmin(), AiAdminState.chatting, F.data == "confirm_ai_create_ct")
+@router.callback_query(AiAdminState.chatting, IsAdmin(), F.data == "confirm_ai_create_ct")
 async def confirm_ai_create_ct(
         callback: CallbackQuery,
         state: FSMContext,
@@ -89,7 +89,7 @@ async def confirm_ai_create_ct(
                          f"продолжительность: {catalog.duration} мин", reply_markup=kb.admin)
     await state.set_state(AiAdminState.chatting)
 
-@router.callback_query(IsAdmin(), AiAdminState.chatting, F.data == "cancel_ai_create_ct")
+@router.callback_query(AiAdminState.chatting, IsAdmin(), F.data == "cancel_ai_create_ct")
 async def cancel_ai_booking(
         callback: CallbackQuery,
         state: FSMContext):

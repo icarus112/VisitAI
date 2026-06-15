@@ -5,13 +5,14 @@ import logging
 
 # from app.core import logger
 from app.core.states import CreateUserState, AiUserState, AIBookingCreate
+from app.flows.users import continue_booking_flow, confirm_booking, start_user_registration, ai_create_bk, handle_faq
 from app.handlers.record import send_booking_request
-from app.handlers.user import start_user_registration
 from app.service.admin import AdminService
 from app.ai.ai_intent import AIIntentService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
 from app.core import keyboards as kb
+from app.service.faq import FaqService
 from app.service.user import UserService
 from app.resources import phrases
 from app.shemas.ai import AIIntentBooking
@@ -20,8 +21,13 @@ router = Router()
 logger = logging.getLogger(__name__)
 
 @router.message(AIBookingCreate.ask_date)
-async def ask_booking_date(message: Message, state: FSMContext, ct_sv: CatalogService):
-    await state.update_data(date=message.text)
+async def ask_booking_date(message: Message, state: FSMContext,
+                           ct_sv: CatalogService,
+                           bk_sv: BookingService):
+    date_str = message.text
+    date = bk_sv.parse_date(date_str)
+
+    await state.update_data(date=date)
 
     is_ready = await continue_booking_flow(message, state, ct_sv)
 
@@ -122,7 +128,8 @@ async def ai_record_handler(
         ai_sv: AIIntentService,
         ct_sv: CatalogService,
         us_sv: UserService,
-        bk_sv: BookingService):
+        bk_sv: BookingService,
+        faq_sv: FaqService):
 
     user = await us_sv.get_by_tg_id(message.from_user.id)
     if not user:
@@ -145,6 +152,11 @@ async def ai_record_handler(
     if result.intent == "create_booking":
         await ai_create_bk(message, state, result,
                        ai_sv, ct_sv, us_sv, bk_sv)
+        return
+
+    if result.intent == "faq":
+        await handle_faq(message, result, faq_sv)
+        return
 
 @router.callback_query(AIBookingCreate.ask_name, F.data.startswith("catalog:"))
 async def choose_catalog(callback: CallbackQuery,
@@ -204,142 +216,3 @@ async def cancel_ai_booking(
     await callback.message.edit_text("❌ Создание записи отменено")
     logger.info(f"canceled booking| user_id= {callback.from_user.id}, ct_name= {catalog_query}")
     await callback.message.answer("Главное меню", reply_markup=kb.main)
-
-"""
-=================================================
-                   ЛОГИКА
-=================================================
-"""
-
-async def ai_create_bk(message: Message,
-                       state: FSMContext,
-                       result: AIIntentBooking,
-                       ai_sv: AIIntentService,
-                       ct_sv: CatalogService,
-                       us_sv: UserService,
-                       bk_sv: BookingService
-                       ):
-    catalog_query = (result.catalog_query or "").strip()
-    keywords = result.search_keywords or []
-
-    if not catalog_query and not keywords:
-        question = phrases.ask_phrase(phrases.phrases_service)
-        await message.answer(question)
-        await state.set_state(AIBookingCreate.ask_name)
-        return
-
-    bookings = await ct_sv.find_by_name(catalog_query)
-
-    if not bookings:
-        await message.answer("Включен умный поиск...")
-        bookings = await ct_sv.embedding_search(result)
-
-        if not bookings:
-            logger.info(
-                f"can't find catalog for name: {catalog_query}"
-            )
-            await message.answer("Я не нашёл такую услугу. Выберите услугу из списка", reply_markup=kb.main)
-            return
-
-    if len(bookings) > 1:
-        question = phrases.ask_phrase(phrases.similar_services)
-
-        await message.answer(
-            question,
-            reply_markup=kb.catalog_keyboard(bookings)
-        )
-
-        await state.set_state(AIBookingCreate.ask_name)
-        return
-
-    selected = bookings[0]
-
-    await state.update_data(
-        user_tg_id=message.from_user.id,
-        ct_id=selected.id,
-        catalog_query=selected.name
-    )
-
-    booking_data = {}
-
-    if result.date:
-        booking_data["date"] = result.date
-
-    if result.time:
-        time_str = result.time
-
-        try:
-            time = bk_sv.parse_time(time_str)
-
-        except ValueError:
-            logger.exception(f"could not parse time={time_str}")
-            await message.answer("вы ввели не правильное время попробуйте заново", reply_markup=kb.main)
-            await state.clear()
-            await state.set_state(AiUserState.chatting)
-
-        time_str = time.strftime('%H:%M')
-
-        booking_data["time"] = time_str
-
-    if result.comment:
-        booking_data["comment"] = result.comment
-
-    await state.update_data(**booking_data)
-
-    is_ready = await continue_booking_flow(message, state, ct_sv)
-
-    if not is_ready:
-        return
-
-    await state.set_state(AiUserState.chatting)
-    await confirm_booking(message, state)
-
-async def confirm_booking(message: Message, state: FSMContext):
-    data = await state.get_data()
-
-    name = data.get('catalog_query')
-    date = data.get('date')
-    time = data.get('time')
-    comment = data.get('comment')
-
-    await message.answer(
-        f"Проверьте запись:\n\n"
-        f"Услуга: {name}\n"
-        f"Дата: {date}\n"
-        f"Время: {time}\n"
-        f"Комментарий: {comment or '-'}",
-        reply_markup=kb.confirm_ai_booking
-    )
-
-async def continue_booking_flow(message: Message,
-                                state: FSMContext,
-                                ct_sv: CatalogService):
-    data = await state.get_data()
-
-    name = data.get('catalog_query')
-    date = data.get('date')
-    time = data.get('time')
-
-    if not name:
-
-        question = phrases.ask_phrase(phrases.phrases_service)
-        await message.answer(question)
-        await state.set_state(AIBookingCreate.ask_name)
-        return False
-
-    if not date:
-        question = phrases.ask_phrase(phrases.phrases_date)
-
-        await message.answer(question)
-        await state.set_state(AIBookingCreate.ask_date)
-        return False
-
-    if not time:
-
-        question = phrases.ask_phrase(phrases.phrases_time)
-
-        await message.answer(question)
-        await state.set_state(AIBookingCreate.ask_time)
-        return False
-
-    return True

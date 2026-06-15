@@ -7,6 +7,7 @@ from app.core.states import AIBookingCreate, AiUserState, CreateUserState
 from app.resources import phrases
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
+from app.service.faq import FaqService
 from app.service.user import UserService
 from app.shemas.ai import AIIntentBooking
 from app.core import keyboards as kb
@@ -21,9 +22,7 @@ logger = logging.getLogger(__name__)
 async def ai_create_bk(message: Message,
                        state: FSMContext,
                        result: AIIntentBooking,
-                       ai_sv: AIIntentService,
                        ct_sv: CatalogService,
-                       us_sv: UserService,
                        bk_sv: BookingService
                        ):
     catalog_query = (result.catalog_query or "").strip()
@@ -151,7 +150,9 @@ async def continue_booking_flow(message: Message,
 
     return True
 
-async def handle_faq(message, state, result, faq_sv):
+async def handle_faq(message: Message,
+                     result: AIIntentBooking,
+                     faq_sv: FaqService):
     answer = await faq_sv.find_answer(result)
 
     if answer:

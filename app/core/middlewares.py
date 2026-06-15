@@ -3,6 +3,7 @@ from aiogram.types import TelegramObject
 from aiogram import BaseMiddleware
 
 from app.ai.ai_intent import AIIntentService
+from app.repository.faq import FAQRepos
 from app.service.embedding import EmbeddingService
 from app.repository.admin import AdminRepos
 from app.repository.booking import BookingRepos
@@ -11,6 +12,7 @@ from app.repository.user import UserRepos
 from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
+from app.service.faq import FaqService
 from app.service.user import UserService
 
 # создание сессии, и дать доступ к нему классам которые написаны ниже
@@ -36,6 +38,7 @@ class AppMiddleware(BaseMiddleware):
                 ad_rp = AdminRepos(session)
                 ct_rp = CatalogRepos(session)
                 bk_rp = BookingRepos(session)
+                faq_rp = FAQRepos(session)
 
                 # service
                 data["em_sv"] = self.em_sv
@@ -46,6 +49,7 @@ class AppMiddleware(BaseMiddleware):
                 data["ct_sv"] = CatalogService(ct_rp,
                                                self.em_sv)
                 data["bk_sv"] = BookingService(bk_rp, us_rp, ct_rp)
+                data["faq_sv"] = FaqService(faq_rp)
 
                 result = await handler(event, data)
                 await session.commit()
