@@ -114,12 +114,15 @@ class PayHistory(Base):
         return(f"<PayHistory: id={self.id}, booking_id={self.booking_id},"
                f"payed_at={self.payed_at}, amount={self.amount}>")
 
-class FAQ(Base):
+class Faq(Base):
     __tablename__ = "faqs"
 
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
     question: Mapped[str] = mapped_column(TEXT, nullable=False)
     keywords: Mapped[list[str]] = mapped_column(JSON, nullable=False)
     answer: Mapped[str] = mapped_column(TEXT, nullable=False)
+    search_text: Mapped[str] = mapped_column(TEXT, nullable=False)
 
-
+    __table_args__ = (
+        Index("idx_faq_search_text", "search_text"),
+    )
