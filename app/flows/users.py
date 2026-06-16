@@ -1,3 +1,4 @@
+from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 import logging
@@ -5,6 +6,7 @@ import logging
 from app.ai.ai_intent import AIIntentService
 from app.core.states import AIBookingCreate, AiUserState, CreateUserState
 from app.resources import phrases
+from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
 from app.service.faq import FaqService
@@ -59,6 +61,8 @@ async def ai_create_bk(message: Message,
         return
 
     selected = bookings[0]
+    await message.answer(f"Выбрана услуга: \n"
+                         f"{selected.name} - {selected.price} руб / {selected.duration} мин")
 
     await state.update_data(
         user_tg_id=message.from_user.id,
@@ -179,3 +183,65 @@ async def start_user_registration(message: Message, state: FSMContext):
                          f"Можно обращаться к вам как {name}?",
                          reply_markup=kb.authorization)
     await state.set_state(CreateUserState.ask_name)
+
+async def send_booking_request(
+        state: FSMContext,
+        bot: Bot,
+        bk_sv: BookingService,
+        ad_sv: AdminService,
+        comment: str
+):
+    data = await state.get_data()
+    user_tg_id = data.get("user_tg_id")
+    ct_id = data.get("ct_id")
+    time_str = data.get("time")
+    date_str = data.get("date")
+
+    if not user_tg_id or not ct_id or not time_str or not date_str:
+        return False, "Не хватает данных для создания заявки"
+
+    try:
+
+        result = await bk_sv.create_booking(
+            tg_id=user_tg_id,
+            ct_id=ct_id,
+            date_str=date_str,
+            time_str=time_str,
+            comment=comment
+        )
+
+    except Exception as e:
+        logger.exception(f"can't create booking tg_id={user_tg_id}, "
+                         f"ct_id={ct_id}, date_str: date_str={date_str},"
+                         f"time_str={time_str}, e: {e}")
+        return False, "Ошибка при создании заявки"
+
+    booking = result.booking
+    user = result.user
+    ct = result.ct
+
+    text = (
+        "📩 Новая заявка\n\n"
+        f"👤 Пользователь: {user.name}\n"
+        f"📞 Номер телефона: {user.phone}\n"
+        f"🧾 Услуга: {ct.name}\n"
+        f"📅 Дата: {booking.date.strftime('%d.%m.%Y')}\n"
+        f"⏰ Время: {booking.time.strftime('%H:%M')}\n"
+        f"💬 Комментарий: {result.comment}"
+    )
+
+    try:
+        admins = await ad_sv.get_all_admin()
+    except Exception as e:
+        print(e)
+        return False, "Ошибка при получении выборки администраторов"
+
+    for admin in admins:
+        await bot.send_message(
+            chat_id=admin.tg_id,
+            text=text,
+            reply_markup=kb.admin_booking(booking.id)
+        )
+
+    await state.set_state(AiUserState.chatting)
+    return True, "Заявка отправлена администратору"

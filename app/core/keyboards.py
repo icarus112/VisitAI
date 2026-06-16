@@ -6,7 +6,8 @@ from database.models import Catalog
 main = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="👤Мои записи")],
     [KeyboardButton(text="✏️Добавить запись")],
-    [KeyboardButton(text="❗ Удалить запись")],
+    [KeyboardButton(text="❗ Удалить"),
+    KeyboardButton(text="📂 Каталог услуг")],
     [KeyboardButton(text="🪪 Связаться с администратором")]],
     resize_keyboard=True,
     input_field_placeholder="Выберите пункт меню...")

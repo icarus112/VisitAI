@@ -151,7 +151,7 @@ async def ai_record_handler(
 
     if result.intent == "create_booking":
         await ai_create_bk(message, state, result,
-                       ai_sv, ct_sv, us_sv, bk_sv)
+                       ct_sv, bk_sv)
         return
 
     if result.intent == "faq":
@@ -174,7 +174,8 @@ async def choose_catalog(callback: CallbackQuery,
         catalog_query=catalog.name
     )
 
-    await callback.message.answer(f"Выбрана услуга: {catalog.name}")
+    await callback.message.answer(f"Выбрана услуга: \n"
+                                  f"{catalog.name} - {catalog.price} руб / {catalog.duration} мин")
 
     is_ready = await continue_booking_flow(callback.message, state, ct_sv)
 
