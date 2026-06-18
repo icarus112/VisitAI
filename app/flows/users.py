@@ -201,7 +201,6 @@ async def send_booking_request(
         return False, "Не хватает данных для создания заявки"
 
     try:
-
         result = await bk_sv.create_booking(
             tg_id=user_tg_id,
             ct_id=ct_id,
@@ -232,8 +231,8 @@ async def send_booking_request(
 
     try:
         admins = await ad_sv.get_all_admin()
-    except Exception as e:
-        print(e)
+    except Exception:
+        logger.warning("can't get admin list")
         return False, "Ошибка при получении выборки администраторов"
 
     for admin in admins:
@@ -245,3 +244,51 @@ async def send_booking_request(
 
     await state.set_state(AiUserState.chatting)
     return True, "Заявка отправлена администратору"
+
+async def send_bk_remove(bk_id: int,
+                         bk_sv: BookingService,
+                         ad_sv: AdminService,
+                         bot: Bot):
+
+    bk = await bk_sv.get_full_bk(bk_id)
+
+    try:
+        rowcount = await bk_sv.remove_bk(bk_id)
+        if rowcount == 0:
+            logger.warning(
+                "booking was not removed, booking_id=%s",
+                bk_id,
+            )
+            raise RuntimeError(f"Booking {bk_id} was not removed")
+
+    except Exception:
+        logger.exception("can't remove booking: bk_id=%s", bk_id)
+        raise
+
+    try:
+        us = bk.user
+        ct = bk.catalog
+
+        text = (
+            "Удалена заявка\n\n"
+            f"👤 Пользователь: {us.name}\n"
+            f"📞 Номер телефона: {us.phone}\n"
+            f"🧾 Услуга: {ct.name}\n"
+            f"📅 Дата: {bk.date.strftime('%d.%m.%Y')}\n"
+            f"⏰ Время: {bk.time.strftime('%H:%M')}\n"
+            f"💬 Комментарий: {bk.comment}"
+        )
+        admins = await ad_sv.get_all_admin()
+
+        if admins is not None:
+            for admin in admins:
+                await bot.send_message(
+                    chat_id=admin.tg_id,
+                    text=text
+                )
+    except Exception:
+        logger.warning("cant send msg to admins: bk_id=%s", bk_id)
+        raise
+
+
+

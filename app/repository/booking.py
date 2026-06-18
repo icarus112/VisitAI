@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from sqlalchemy import select, update, and_, or_
+from sqlalchemy import select, update, and_, or_, func, delete
+from sqlalchemy.orm import joinedload
 
 from app.core.enum import BookStatus
 from app.shemas.record import BookingCreate
@@ -29,6 +30,19 @@ class BookingRepos:
 
         return booking
 
+    async def get_full_bk(self, bk_id: int):
+        stmt = (select(Booking)
+                .options(
+                joinedload(Booking.user),
+                joinedload(Booking.catalog)
+                )
+                .where(Booking.id == bk_id))
+
+        result = await self.session.execute(stmt)
+        booking = result.scalar_one_or_none()
+
+        return booking
+
     async def get_my_bookings(self, us_id: int) -> List[Booking]:
         stmt = (select(Booking)
                 .where(and_(Booking.user_id == us_id,
@@ -38,6 +52,27 @@ class BookingRepos:
         result = await self.session.execute(stmt)
         bookings = result.scalars().all()
         return bookings
+
+    async def count_bk(self) -> int:
+        stmt = (select(func.count(Booking.id))
+                .where(Booking.status.in_([BookStatus.PENDING.value, BookStatus.UNPAID.value,
+                                           BookStatus.PAID.value, BookStatus.FAILED_PAY.value]))
+                )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_bk_page(self, page: int) -> Booking:
+
+        stmt = (select(Booking)
+                .where(Booking.status.in_([BookStatus.PENDING.value, BookStatus.UNPAID.value,
+                                                BookStatus.PAID.value, BookStatus.FAILED_PAY.value]))
+                .order_by(Booking.id)
+                .limit(1)
+                .offset(page))
+
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
 
     async def auto_complete_old(self, us_id: int) -> None:
         threshold = datetime.now() - timedelta(hours=3)
@@ -70,4 +105,12 @@ class BookingRepos:
 
         result = await self.session.execute(stmt)
 
+        return result.rowcount
+
+    async def remove_bk(self, bk_id: int):
+
+        stmt = (delete(Booking)
+                .where(Booking.id == bk_id))
+
+        result = await self.session.execute(stmt)
         return result.rowcount

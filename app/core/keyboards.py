@@ -1,7 +1,7 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
     InlineKeyboardMarkup, InlineKeyboardButton)
 
-from database.models import Catalog
+from database.models import Catalog, Booking
 
 main = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="👤Мои записи")],
@@ -67,8 +67,15 @@ confirm_ai_create_ct = InlineKeyboardMarkup(inline_keyboard=[
     ]
 ])
 
+confirm_remove_bk = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="🗑️ Удалить", callback_data="confirm_remove_bk"),
+     InlineKeyboardButton(text="❌ Отмена", callback_data="cancel_remove_bk")
+    ]
+])
+
 """
 =============================================================
+                              FUNCS
 =============================================================
 """
 
@@ -116,7 +123,9 @@ def admin_booking(booking_id: int):
         ]
     )
 
-def ct_page_kb(cts: list[Catalog], page: int, total_pages: int):
+def ct_page_kb(cts: list[Catalog],
+               page: int,
+               total_pages: int) -> InlineKeyboardMarkup:
     buttons = []
 
     for ct in cts:
@@ -157,3 +166,45 @@ def ct_page_kb(cts: list[Catalog], page: int, total_pages: int):
     )
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+async def bk_page_kb(bk: Booking,
+                    page: int,
+                    total: int,) -> InlineKeyboardMarkup:
+    buttons = []
+    nav_buttons = []
+
+    if page > 0:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                text="⬅️",
+                callback_data=f"bk_page:{page - 1}"
+            )
+        )
+
+    if page < total - 1:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                text="➡️",
+                callback_data=f"bk_page:{page + 1}"
+            )
+        )
+
+    if nav_buttons:
+        buttons.append(nav_buttons)
+
+    buttons.append(
+        [InlineKeyboardButton(
+            text="🗑️ Удалить",
+            callback_data=f"remove:{bk.id}"
+        )]
+    )
+
+    buttons.append(
+        [InlineKeyboardButton(
+            text="☰ Главное меню",
+            callback_data="to_main"
+        )]
+    )
+
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+

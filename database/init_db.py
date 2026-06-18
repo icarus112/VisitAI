@@ -1,11 +1,13 @@
 import asyncio
-
+import logging
 from sqlalchemy import text
 
-from app.scripts.seed_db import fill_ct, fill_faq
+from app.scripts.seed_db import fill_ct, fill_faq, fill_bk, has_any
 from conf import DEV_MODE
 from database.async_engine import async_engine
-from database.models import Base
+from database.models import Base, Catalog, Booking, Faq
+
+logger = logging.getLogger(__name__)
 
 async def init_db():
     async with async_engine.begin() as conn:
@@ -14,10 +16,23 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
 
     if DEV_MODE:
-        await fill_ct()
-        print("ct is filled")
-        await fill_faq()
-        print("faq is filled")
+        if not await has_any(Catalog):
+            await fill_ct()
+            logger.info("Catalog seeds filled")
+        else:
+            logger.info("Catalog seeds skipped")
+
+        if not await has_any(Faq):
+            await fill_faq()
+            logger.info("Faq seeds filled")
+        else:
+            logger.info("Faq seeds skipped")
+
+        if not await has_any(Booking):
+            await fill_bk()
+            logger.info("Booking seeds filled")
+        else:
+            logger.info("Booking seeds skipped")
 
 if __name__ == "__main__":
     asyncio.run(init_db())

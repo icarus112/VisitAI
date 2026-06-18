@@ -29,15 +29,21 @@ async def get_tg_id(message: Message,
     await state.clear()
     await message.answer(f"Ваш тг id:")
     await message.answer(f"{message.from_user.id}")
+    await state.set_state(AiAdminState.chatting)
+
 
 @router.message(F.text == "🪪 Сотрудники", IsSuperAdmin())
-async def super_admin_panel(message: Message):
+async def super_admin_panel(message: Message,
+                            state: FSMContext):
+    await state.clear()
     await message.answer("✅ Доступ открыт", reply_markup=kb.super_panel)
+    await state.set_state(AiAdminState.chatting)
 
 @router.message(F.text == "📃 Список работников", IsSuperAdmin())
 async def list_admin(message: Message,
                      ad_sv: AdminService,
                      state: FSMContext):
+    await state.clear()
     admins = await ad_sv.get_info()
     await message.answer(admins, parse_mode="HTML")
     await state.set_state(AiAdminState.chatting)

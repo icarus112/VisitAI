@@ -42,7 +42,6 @@ class AdminRepos:
             role="ADMIN",
             name=name
         )
-
         self.session.add(admin)
 
     async def get_all_admin(self) -> List[Admin]:

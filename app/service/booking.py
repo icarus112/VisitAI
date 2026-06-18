@@ -1,17 +1,21 @@
 import datetime
 import logging
 
+from aiogram.client import bot
+
 from logs import logger
 from app.shemas.record import BookingCreate, BookingRequestResult
 from database.models import Booking
 from app.core.enum import BookStatus
+from app.core import keyboards as kb
 
 logger = logging.getLogger(__name__)
 class BookingService:
-    def __init__(self, bk_rp, us_rp, ct_rp):
+    def __init__(self, bk_rp, us_rp, ct_rp, ad_rp):
         self.bk_rp = bk_rp
         self.us_rp = us_rp
         self.ct_rp = ct_rp
+        self.ad_rp = ad_rp
 
     def today(self) -> datetime.date:
         return datetime.date.today()
@@ -72,6 +76,38 @@ class BookingService:
             comment=comment
         )
 
+    async def page_text(self,
+                        bk: Booking
+                        ):
+        try:
+            ct = await self.ct_rp.get_ct_by_id(bk.catalog_id)
+            tran_status = await self.trans_pay_status(bk.status)
+        except Exception:
+            logger.warning("error for bk_page_text")
+            raise
+
+        return (f"\nУслуга: {ct.name}"
+        f"\nДата: {bk.date.strftime('%Y.%m.%d')}"
+        f"\nВремя: {bk.time}"
+        f"\nСтатус: {tran_status}")
+
+    async def page_data(self, page: int):
+
+        total = await self.bk_rp.count_bk()
+
+        if total == 0:
+            return [], 0
+
+        if page < 0:
+            page = 0
+
+        if page >= total:
+            page = total - 1
+
+        bk = await self.bk_rp.get_bk_page(page)
+
+        return bk, page, total
+
     def parse_date(self, date_str: str) -> datetime.date:
         wd = date_str.split(".")
         wd = [el for el in wd if el != ""]
@@ -102,7 +138,7 @@ class BookingService:
             return datetime.time.fromisoformat(time_str)
         except ValueError:
             logger.warning(f"wrong time format for creating booking, time_str= {time_str}")
-            raise ValueError("Ошибка при переводе времени в sv")
+            raise
 
     async def get_booking(self, booking_id: int) -> Booking | None:
 
@@ -124,6 +160,25 @@ class BookingService:
 
         return booking
 
+    async def get_full_bk(self, bk_id: int) -> Booking | None:
+        try:
+            full_bk = await self.bk_rp.get_full_bk(bk_id)
+
+        except Exception:
+            logger.exception(
+                f"Failed to get booking "
+                f"booking_id={bk_id}"
+            )
+            raise
+
+        if full_bk is None:
+            logger.warning(
+                f"booking not found "
+                f"booking_id={bk_id}"
+            )
+
+        return full_bk
+
     async def cancel_pay(self, booking_id: int):
         booking = await self.bk_rp.get_booking(booking_id)
 
@@ -139,6 +194,14 @@ class BookingService:
             "booking received without online payment, booking_id=%s",
             booking_id,
         )
+
+    async def remove_bk(self, bk_id: int) -> None:
+        bk = await self.bk_rp.get_booking(bk_id)
+
+        if bk is None:
+            raise ValueError(f"Booking {bk_id} not found")
+
+        return await self.bk_rp.remove_bk(bk_id)
 
     async def my_bk_info(self, us_id: int) -> str:
         await self.bk_rp.auto_complete_old(us_id)

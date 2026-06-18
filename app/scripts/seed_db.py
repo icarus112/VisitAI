@@ -1,13 +1,26 @@
+import datetime
+from datetime import date
 from decimal import Decimal
 
+from sqlalchemy import select
+
+from app.core.enum import BookStatus
 from app.repository.catalog import CatalogRepos
 from app.repository.faq import FAQRepos
 from app.service.catalog import CatalogService
 from app.service.embedding import EmbeddingService
 from app.shemas.catalog import CatalogCreate, CatalogList
 from app.shemas.faq import FaqCreate, FaqList
+from app.shemas.record import BookingCreate, BookingList
 from database.async_engine import async_session
+from database.models import User, Catalog, Booking
 
+async def has_any(model) -> bool:
+    async with async_session() as session:
+        result = await session.execute(
+            select(model.id).limit(1)
+        )
+        return result.scalar_one_or_none() is not None
 
 async def fill_ct():
     async with async_session() as session:
@@ -268,7 +281,92 @@ async def fill_faq():
                             faq11, faq12, faq13, faq14, faq15])
 
         for f in faqs.item:
-
             new_faq = await faq_rp.create_faq(f)
 
         await session.commit()
+
+async def fill_bk():
+    async with async_session() as session:
+        us_result = await session.execute(
+            select(User).limit(1)
+        )
+        user = us_result.scalar_one_or_none()
+
+        if user is None:
+            print("Нельзя создать записи: в БД нет пользователей")
+            return
+
+        ct_result = await session.execute(
+            select(Catalog).order_by(Catalog.id).limit(5)
+        )
+        catalogs = list(ct_result.scalars().all())
+
+        if len(catalogs) < 5:
+            print("Нельзя создать записи: в БД меньше 5 услуг")
+            return
+
+        today = date.today()
+
+        bk1 = BookingCreate(
+            user_id=user.id,
+            catalog_id=catalogs[0].id,
+            date=today + datetime.timedelta(days=1),
+            time=datetime.time(hour=10, minute=0),
+            status=BookStatus.PENDING,
+            comment="Хочу попасть к мастеру Анне, если будет свободное время."
+        )
+
+        bk2 = BookingCreate(
+            user_id=user.id,
+            catalog_id=catalogs[1].id,
+            date=today + datetime.timedelta(days=2),
+            time=datetime.time(hour=12, minute=30),
+            status=BookStatus.UNPAID,
+            comment="Возможно, немного опоздаю на 5-10 минут."
+        )
+
+        bk3 = BookingCreate(
+            user_id=user.id,
+            catalog_id=catalogs[2].id,
+            date=today + datetime.timedelta(days=3),
+            time=datetime.time(hour=15, minute=0),
+            status=BookStatus.PAID,
+            comment="Прошу записать к любому свободному мастеру."
+        )
+
+        bk4 = BookingCreate(
+            user_id=user.id,
+            catalog_id=catalogs[3].id,
+            date=today - datetime.timedelta(days=1),
+            time=datetime.time(hour=14, minute=0),
+            status=BookStatus.COMPLETED,
+            comment="Хочу уточнить детали процедуры перед началом."
+        )
+
+        bk5 = BookingCreate(
+            user_id=user.id,
+            catalog_id=catalogs[4].id,
+            date=today + datetime.timedelta(days=5),
+            time=datetime.time(hour=18, minute=30),
+            status=BookStatus.CANCELLED,
+            comment="Если возможно, поставьте запись ближе к вечеру."
+        )
+
+        bks = BookingList(item=[bk1, bk2, bk3, bk4, bk5])
+        n = 1
+
+        for b in bks.item:
+            new_bk = Booking(
+                user_id=b.user_id,
+                catalog_id=b.catalog_id,
+                date=b.date,
+                time=b.time,
+                status=b.status,
+                comment=b.comment
+            )
+            session.add(new_bk)
+            print("bk:", n)
+            n += 1
+
+        await session.commit()
+        print("Записи успешно созданы")

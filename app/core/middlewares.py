@@ -48,7 +48,7 @@ class AppMiddleware(BaseMiddleware):
                 data["ad_sv"] = AdminService(ad_rp)
                 data["ct_sv"] = CatalogService(ct_rp,
                                                self.em_sv)
-                data["bk_sv"] = BookingService(bk_rp, us_rp, ct_rp)
+                data["bk_sv"] = BookingService(bk_rp, us_rp, ct_rp, ad_rp)
                 data["faq_sv"] = FaqService(faq_rp)
 
                 result = await handler(event, data)

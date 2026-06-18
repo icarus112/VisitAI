@@ -1,11 +1,11 @@
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, callback_query
 import logging
 
 from app.core import keyboards as kb
-from app.core.states import CreateUserState, Requests, AiUserState
-from app.flows.users import start_user_registration
+from app.core.states import CreateUserState, Requests, AiUserState, RemovingBooking
+from app.flows.users import start_user_registration, send_bk_remove
 from app.resources import phrases
 from app.service.admin import AdminService
 from app.service.booking import BookingService
@@ -313,6 +313,7 @@ async def open_ct(message: Message,
                              reply_markup=kb.authorization)
         await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/users.py
         return
+
     cts, page, total_pages = await ct_sv.page_data(page=0)
 
     if not cts:
@@ -375,4 +376,204 @@ async def ct_select(callback: CallbackQuery,
         logger.info(f"can't find catalog={selected.name}")
         await callback.message.edit_text("Услуга не найдена")
         await state.clear()
+        await state.set_state(AiUserState.chatting)
 
+# "❗ Удалить"
+"""=================================================================
+                               ❗ Удалить
+====================================================================
+"""
+
+@router.message(F.text == "❗ Удалить")
+async def remove_bk(message: Message,
+                    state: FSMContext,
+                    bk_sv: BookingService,
+                    us_sv: UserService):
+    await state.clear()
+
+    user = await us_sv.get_by_tg_id(message.from_user.id)
+
+    if user is None:
+        #  у юзера может не быть юзернейма
+        name = message.from_user.username or message.from_user.first_name
+        await state.update_data(suggested_name=name)
+
+        await message.answer(f"Давайте познакомимся 😌\n\n"
+                             f"Можно обращаться к вам как {name}?",
+                             reply_markup=kb.authorization)
+        await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/users.py
+        return
+
+    try:
+
+        bk, page, total = await bk_sv.page_data(page=0)
+
+        if bk is None:
+            await message.answer("У вас нету записей")
+            await state.set_state(AiUserState.chatting)
+            logger.info(
+                "User has no bookings: tg_id=%s user_id=%s",
+                user.tg_id,
+                user.id
+            )
+            return
+
+        text = await bk_sv.page_text(bk)
+
+        await message.answer(
+            f"Ваши записи\nСтраница {page + 1}/{total}"
+            f"\n\n{text}\n",
+            reply_markup=await kb.bk_page_kb(bk, page, total)
+        )
+
+    except Exception:
+        logger.exception(
+            "Failed to open booking delete page: tg_id=%s user_id=%s text=%r",
+            user.tg_id,
+            user.id,
+            message.text
+        )
+
+        await state.set_state(AiUserState.chatting)
+        await message.answer(
+            "Произошла ошибка. Попробуйте позже"
+        )
+        raise
+
+@router.callback_query(F.data.startswith("bk_page:"))
+async def bk_nav_btn(callback: CallbackQuery,
+                     bk_sv: BookingService,
+                     state: FSMContext):
+    page = int(callback.data.split(":")[1])
+    user_id = callback.from_user.id
+
+    try:
+        bk, page, total = await bk_sv.page_data(page=page)
+
+        if bk is None:
+            await callback.message.edit_text(
+                "У вас пока нет записей."
+            )
+            await state.set_state(AiUserState.chatting)
+            await callback.answer()
+            return
+
+        text = await bk_sv.page_text(bk)
+
+        await callback.message.edit_text(
+            f"Ваши записи\nСтраница {page + 1}/{total}"
+            f"\n\n{text}\n",
+            reply_markup=await kb.bk_page_kb(bk, page, total)
+
+        )
+
+    except Exception:
+        logger.exception(
+            "Ошибка при удалени записей по записям: user_tg_id=%s data=%r",
+            user_id,
+            callback.data
+        )
+
+        await state.set_state(AiUserState.chatting)
+        await callback.answer(
+            "Произошла ошибка. Попробуйте позже.",
+            show_alert=True
+        )
+        raise
+
+@router.callback_query(F.data.startswith("remove:"))
+async def ask_to_remove(callback: CallbackQuery,
+                        state: FSMContext,
+                        bk_sv: BookingService):
+    await callback.message.edit_reply_markup(reply_markup=None)
+    bk_id = int(callback.data.split(":")[1])
+
+    try:
+        bk = await bk_sv.get_booking(bk_id)
+
+        if bk is None:
+            await callback.message.answer("Такой записи не существует")
+            logger.warning("can't get bk from bk_id for removing: bk_id=%s, user_tg_id=%s",
+                           bk_id, callback.from_user.id)
+            await state.set_state(AiUserState.chatting)
+            return
+
+        text = await bk_sv.page_text(bk)
+        await callback.message.answer(
+            "Вы уверены что хотите удалить это запись?"
+            f"\n\n{text}",
+            reply_markup=kb.confirm_remove_bk
+        )
+
+        await state.update_data(bk_id=bk_id)
+        await state.set_state(RemovingBooking.ask_user)
+
+    except Exception:
+
+        logger.exception(
+            "Ошибка при удалени записей : user_tg_id=%s data=%r",
+            callback.from_user.id,
+            callback.data
+        )
+
+        await state.set_state(AiUserState.chatting)
+        await callback.answer(
+            "Произошла ошибка. Попробуйте позже.",
+            show_alert=True
+        )
+        raise
+
+@router.callback_query(RemovingBooking.ask_user, F.data == "confirm_remove_bk")
+async def removing_bk(callback: CallbackQuery,
+                      state: FSMContext,
+                      bk_sv: BookingService,
+                      ad_sv: AdminService,
+                      bot: Bot):
+    await callback.message.edit_reply_markup(reply_markup=None)
+
+    data = await state.get_data()
+    bk_id = data.get("bk_id")
+
+    if not isinstance(bk_id, int):
+        await callback.message.answer("Ошибка: не удалось определить запись.")
+        logger.warning("can't get bk_id from state_data, bk_id=%s, us_tg_id=%s",
+                       bk_id, callback.from_user.id)
+        return
+
+    try:
+        bk = await bk_sv.get_booking(bk_id)
+
+        if bk is None:
+            await callback.message.answer("Такой записи не существует")
+            logger.warning("can't get bk from bk_id for removing: bk_id=%s, user_tg_id=%s",
+                           bk_id, callback.from_user.id)
+            await state.set_state(AiUserState.chatting)
+            return
+
+        await send_bk_remove(bk_id=bk_id,
+                             bk_sv=bk_sv,
+                             ad_sv=ad_sv,
+                             bot=bot)
+        await callback.message.answer("Запись успешно удалена!")
+
+    except Exception:
+        logger.exception(
+            "Ошибка при удалени записей : user_tg_id=%s data=%r",
+            callback.from_user.id,
+            callback.data
+        )
+
+        await state.set_state(AiUserState.chatting)
+        await callback.answer(
+            "Произошла ошибка. Попробуйте позже.",
+            show_alert=True
+        )
+        raise
+
+@router.callback_query(RemovingBooking.ask_user, F.data == "cancel_remove_bk")
+async def cancel_removing_bk(callback: CallbackQuery,
+                      state: FSMContext):
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.answer("Удаление записи отменено", reply_markup=kb.main)
+    await state.clear()
+    await state.set_state(AiUserState.chatting)

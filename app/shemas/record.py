@@ -116,7 +116,7 @@ class BookingCreate(BaseModel):
     date: datetime.date
     time: datetime.time
     status: BookStatus
-    comment: str
+    comment: str | None = None
 
     model_config = {"from_attributes": True}
 
@@ -133,6 +133,9 @@ class BookingCreate(BaseModel):
             raise ValueError("catalog_id должно быть положительным")
 
         return v
+
+class BookingList(BaseModel):
+    item: list[BookingCreate]
 
 class BookingRequestResult(BaseModel):
     booking: BookingRead

@@ -22,7 +22,7 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String(15), default="-")
 
     bookings = relationship(
-        "Booking", back_populates="users",
+        "Booking", back_populates="user",
         cascade="all, delete-orphan"
     )
 
@@ -46,7 +46,7 @@ class Catalog(Base):
     __table_args__ = (Index("idx_ct_name", "name"),)
 
     bookings = relationship(
-        "Booking", back_populates="catalogs"
+        "Booking", back_populates="catalog"
     )
 
     def __repr__(self):
@@ -65,10 +65,10 @@ class Booking(Base):
     payment_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     comment: Mapped[str] = mapped_column(TEXT, nullable=True)
 
-    users = relationship(
+    user = relationship(
         "User", back_populates="bookings")
 
-    catalogs = relationship(
+    catalog = relationship(
         "Catalog", back_populates="bookings"
     )
 
