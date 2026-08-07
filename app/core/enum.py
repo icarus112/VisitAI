@@ -3,12 +3,22 @@ from enum import Enum, StrEnum
 
 class BookStatus(Enum):
     PENDING = "PENDING" #ожидание пока админ согласует
-    PAID = "PAID" #согласовано, оплачено
-    UNPAID = "UNPAID" #согласовано, не оплачено
-    CANCELLED = "CANCELLED" #Отменено
-    COMPLETED = "COMPLETED" #услуга оказана, заявка закрыта
-    NO_SHOW = "NO_SHOW" #не пришел
-    FAILED_PAY = "FAILED_PAY" #ошибка при оплате
+    CONFIRMED = "CONFIRMED" #администратор согласовал
+    CANCELLED = "CANCELLED" # отменено
+    COMPLETED = "COMPLETED" # услуга оказана
+    NO_SHOW = "NO_SHOW" # клиент не пришел
+
+class PaymentMethod(StrEnum):
+    ONLINE = "ONLINE"
+    ON_SITE = "ON_SITE"
+
+class PaymentStatus(StrEnum):
+    UNPAID = "UNPAID"
+    PENDING = "PENDING"
+    PAID = "PAID"
+    FAILED = "FAILED"
+    CANCELLED = "CANCELLED"
+    REFUNDED = "REFUNDED" # возврат средств
 
 class Role(StrEnum):
     SUPER_ADMIN = "SUPER_ADMIN"

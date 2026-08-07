@@ -260,6 +260,10 @@ async def without_pay(callback: CallbackQuery,
     await callback.message.answer("Главное меню", reply_markup=kb.main)
     await state.set_state(AiUserState.chatting)
 
+@router.callback_query(F.data == "accept_pay")
+async def with_pay(callback: CallbackQuery,
+                   )
+
 """=================================================================
                                МОИ ЗАПИСИ
 ====================================================================

@@ -1,15 +1,12 @@
 import datetime
 import logging
 
-from aiogram.client import bot
-
-from logs import logger
 from app.shemas.record import BookingCreate, BookingRequestResult
-from database.models import Booking
+from app.database import Booking
 from app.core.enum import BookStatus
-from app.core import keyboards as kb
 
 logger = logging.getLogger(__name__)
+
 class BookingService:
     def __init__(self, bk_rp, us_rp, ct_rp, ad_rp):
         self.bk_rp = bk_rp

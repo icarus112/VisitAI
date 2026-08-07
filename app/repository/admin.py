@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import select
 
-from database.models import Admin
+from app.database import Admin
 
 
 class AdminRepos:

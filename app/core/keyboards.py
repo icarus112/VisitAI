@@ -1,7 +1,7 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
     InlineKeyboardMarkup, InlineKeyboardButton)
 
-from database.models import Catalog, Booking
+from app.database import Catalog, Booking
 
 main = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="👤Мои записи")],

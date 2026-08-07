@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery
 import logging
 
 from app.ai.ai_intent import AIIntentService
-from logs import logger
+from app.logs import logger
 from app.core import keyboards as kb
 from app.core.states import AdminState, CatalogSetState, AiAdminState
 from app.core.filtres import IsSuperAdmin, IsAdmin

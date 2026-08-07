@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 
 from app.core.enum import BookStatus
 from app.shemas.record import BookingCreate
-from database.models import Booking
+from app.database import Booking
 
 
 class BookingRepos:

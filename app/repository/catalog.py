@@ -1,12 +1,9 @@
 from typing import List
-from unittest import result
 
 from sqlalchemy import select, func, desc
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.shemas import catalog
 from app.shemas.catalog import CatalogCreate, CatalogResponse
-from database.models import Catalog
+from app.database import Catalog
 
 
 class CatalogRepos:

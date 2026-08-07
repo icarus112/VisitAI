@@ -5,7 +5,7 @@ from aiogram.types import Message
 
 from app.core.states import AiUserState
 from app.service.admin import AdminService
-from conf import DEV_MODE
+from app.core.conf import settings
 
 dev_router = Router()
 
@@ -19,7 +19,7 @@ async def cancel(message: Message, state: FSMContext):
 async def change_role(message: Message, ad_sv: AdminService, state: FSMContext):
     await state.clear()
 
-    if not DEV_MODE:
+    if not settings.dev_mode:
         await message.answer("⛔ команда не доступна")
         return
 

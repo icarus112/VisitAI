@@ -1,33 +1,35 @@
-from yookassa import Configuration, Payment, payment
+from yookassa import Configuration, Payment
 from uuid import uuid4
 
 class PaymentService:
-    def __init__(self, shop_id: str,
-                 secret_key: str,
-                 return_url: str):
-        Configuration.account_id = shop_id
-        Configuration.secret_key = secret_key
-        Configuration.return_url = return_url
+    def __init__(self,
+                 return_url: str,
+                 bk_rp):
+        self.return_url = return_url
+        self.bk_rp = bk_rp
 
-    def create_booking_payment(self,
-                               booking_id: int,
-                               amount: int | float,
-                               description: str):
+    async def create_booking_payment(self, booking_id: int) -> dict:
+        full_bk = await self.bk_rp.get_full_bk(booking_id)
+        ct = full_bk.catalog
+        bk = full_bk.bk
+
         payment = Payment.create(
             {
                 "amount": {
-
+                    "value": f"{bk.price:.2f}",
+                    "currency": "RUB",
                 },
                 "confirmation": {#ссылка для оплаты
-
+                    "type": "redirect",
+                    "return_url": self.return_url,
                 },
                 "capture": True,
-                "description": description,
+                "description": f"Оплата № bk_id: {booking_id} : {ct.name}",
                 "metadata" : {
-
+                    "bk_id" : str(booking_id)
                 }
             },
-            uuid4()
+            str(uuid4()),
         )
 
         return {
@@ -35,3 +37,6 @@ class PaymentService:
             "status": payment.status,
             "confirmation_id": payment.confirmation.confirmation_url
         }
+
+    def get_payment(self, payment_id: str):
+        return Payment.find_one(payment_id)

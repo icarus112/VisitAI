@@ -77,3 +77,5 @@ uvicorn==0.43.0
 wrapt==2.1.2
 yarl==1.23.0
 yookassa==3.10.1
+
+pydantic-settings

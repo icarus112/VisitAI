@@ -13,7 +13,10 @@ from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
 from app.service.faq import FaqService
+from app.service.payment import PaymentService
 from app.service.user import UserService
+from app.core.conf import settings
+
 
 # создание сессии, и дать доступ к нему классам которые написаны ниже
 class AppMiddleware(BaseMiddleware):
@@ -50,6 +53,7 @@ class AppMiddleware(BaseMiddleware):
                                                self.em_sv)
                 data["bk_sv"] = BookingService(bk_rp, us_rp, ct_rp, ad_rp)
                 data["faq_sv"] = FaqService(faq_rp)
+                data["pm_sv"] = PaymentService(settings.payment_return_url, bk_rp)
 
                 result = await handler(event, data)
                 await session.commit()

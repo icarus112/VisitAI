@@ -1,17 +1,18 @@
 import asyncio
 from aiogram import Bot, Dispatcher
-from aiogram.client.session.aiohttp import AiohttpSession
 import logging
 
 from aiogram.exceptions import TelegramNetworkError
+from yookassa import Configuration
 
 from app.ai.ai_intent import AIIntentService
 from app.service.embedding import EmbeddingService
-from logs import logger
-from database.async_engine import async_session
+from app.core.conf import settings
+from app.database import async_session
 from app.core.middlewares import AppMiddleware
 from app.core.routers import router
-from conf import BOT_TOKEN, BOT_PROXY, AI_API
+from app.logs.logger import setup_logging
+
 
 # @router.message(CommandStart)
 # async def health_check(message: Message):
@@ -81,19 +82,18 @@ async def safe_delete_webhook(bot: Bot, retries: int = 5, delay: int = 5):
 
 
 async def main():
-    if BOT_PROXY:
-        session = AiohttpSession(proxy=BOT_PROXY)
-        bot = Bot(token=BOT_TOKEN, session=session)
-        logger.info(f"Proxy enabled: {BOT_PROXY}")
-    else:
-        bot = Bot(token=BOT_TOKEN)
-        logger.info("Proxy disabled")
+    bot = Bot(token=settings.tg_token.get_secret_value())
 
     dp=Dispatcher()
     em_sv = EmbeddingService( "intfloat/multilingual-e5-small",
     local_files_only=True,)
-    ai_sv = AIIntentService(AI_API)
+    ai_sv = AIIntentService(settings.ai_api.get_secret_value())
+    setup_logging()
     # logging.basicConfig(level=logging.DEBUG)
+
+    #yookassa
+    Configuration.account_id = settings.yookassa_shop_id
+    Configuration.secret_key = settings.yookassa_secret_key.get_secret_value()
 
     # middleware
     dp.message.outer_middleware(AppMiddleware(

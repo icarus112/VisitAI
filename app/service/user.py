@@ -1,5 +1,5 @@
 from app.shemas.record import UserCreate
-from database.models import User
+from app.database import User
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,11 +1,7 @@
-from idlelib import search
-
-from sentence_transformers.util import similarity
 from sqlalchemy import func, select, desc, cast, Text
-from sqlalchemy.ext.asyncio import result
 
 from app.shemas.faq import FaqCreate
-from database.models import Faq
+from app.database import Faq
 
 
 class FAQRepos:

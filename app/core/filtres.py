@@ -3,7 +3,7 @@ from aiogram.types import Message
 
 from app.core.role import RoleCheck
 from app.service.admin import AdminService
-from conf import SUPER_ADMINS, DEV_MODE
+from app.core.conf import settings
 
 
 class IsSuperAdmin(BaseFilter):
@@ -11,7 +11,7 @@ class IsSuperAdmin(BaseFilter):
     async def __call__(self, message: Message, ad_sv: AdminService) -> bool:
         tg_id = message.from_user.id
 
-        if DEV_MODE:
+        if settings.dev_mode:
             admin = await ad_sv.get_ad_by_tg_id(tg_id)
 
             if not admin:
@@ -24,7 +24,7 @@ class IsSuperAdmin(BaseFilter):
 
             return True
 
-        return  tg_id in SUPER_ADMINS
+        return  tg_id in settings.super_admins
 
 class IsAdmin(BaseFilter):
     async def __call__(self, message: Message, ad_sv: AdminService) -> bool:
@@ -32,7 +32,7 @@ class IsAdmin(BaseFilter):
         tg_id = message.from_user.id
         admin = await ad_sv.get_ad_by_tg_id(tg_id)
 
-        if DEV_MODE:
+        if settings.dev_mode:
 
             if not admin:
                 await message.answer("⛔ У тебя нет роли как админ")
@@ -44,7 +44,7 @@ class IsAdmin(BaseFilter):
 
             return True
 
-        if tg_id in SUPER_ADMINS:
+        if tg_id in settings.super_admins:
             return True
 
         if not admin:

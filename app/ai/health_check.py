@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from conf import AI_API
+from app.core.conf import settings
 
 def deepseek_health_check():
     start = time.time()
@@ -10,7 +10,7 @@ def deepseek_health_check():
         r = requests.post(
             "https://api.deepseek.com/chat/completions",
             headers={
-                "Authorization": f"Bearer {AI_API}",
+                "Authorization": f"Bearer {settings.ai_api}",
                 "Content-Type": "application/json",
             },
             json={

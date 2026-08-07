@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from pydantic import BaseModel, field_validator, ConfigDict
 from app.core.enum import BookStatus
-from database.models import User, Catalog
 
 
 class UserCreate(BaseModel):

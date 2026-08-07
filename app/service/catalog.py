@@ -1,17 +1,14 @@
-import asyncio
 import math
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import List
 import logging
 
-from app.repository import catalog
 from app.repository.catalog import CatalogRepos
-from app.service.embedding import EmbeddingService as em_sv, EmbeddingService
+from app.service.embedding import EmbeddingService
 from app.shemas.ai import AIIntentBooking
-from app.shemas.catalog import CatalogCreate, CatalogResponse, CatalogList
-from database.async_engine import async_session
+from app.shemas.catalog import CatalogCreate, CatalogResponse
 
-from database.models import Catalog
+from app.database import Catalog
 
 logger = logging.getLogger(__name__)
 

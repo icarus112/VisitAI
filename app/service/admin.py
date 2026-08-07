@@ -1,10 +1,7 @@
-from typing import List
-
-from aiogram.types import Message
 import logging
 from app.core.enum import Role
-from conf import SUPER_ADMINS, DEV_MODE
-from database.models import Admin
+from app.core.conf import settings
+from app.database.models import Admin
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +13,7 @@ class AdminService:
         self.ad_rp = ad_rp
 
     def is_super_admin(self, tg_id: int) -> bool:
-        return tg_id in SUPER_ADMINS
+        return tg_id in settings.super_admins
 
     async def is_admin(self, tg_id: int) -> bool:
         return self.ad_rp.is_admin(tg_id)
@@ -40,7 +37,7 @@ class AdminService:
             return None
 
     async def change_role(self, tg_id: int, new_role: str) -> Role:
-        if not DEV_MODE:
+        if not settings.dev_mode:
             raise PermissionError("⛔ команда не доступна")
 
         try:

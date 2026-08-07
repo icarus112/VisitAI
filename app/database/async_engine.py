@@ -1,8 +1,8 @@
 import json
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from conf import DATABASE_URL
+from app.core.conf import settings
 
-async_engine = create_async_engine(DATABASE_URL,
+async_engine = create_async_engine(settings.database_url,
                                    json_serializer= lambda obj: json.dumps(obj, ensure_ascii=False),
                                    echo=False)
 
