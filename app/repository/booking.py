@@ -4,9 +4,9 @@ from typing import List
 from sqlalchemy import select, update, and_, or_, func, delete
 from sqlalchemy.orm import joinedload
 
-from app.core.enum import BookStatus
+from app.core.enum import BookStatus, PaymentMethod
 from app.shemas.record import BookingCreate
-from app.database import Booking
+from app.database.models import Booking
 
 
 class BookingRepos:
@@ -46,8 +46,8 @@ class BookingRepos:
     async def get_my_bookings(self, us_id: int) -> List[Booking]:
         stmt = (select(Booking)
                 .where(and_(Booking.user_id == us_id,
-                       Booking.status.in_([BookStatus.PENDING.value, BookStatus.UNPAID.value,
-                                           BookStatus.PAID.value, BookStatus.FAILED_PAY.value])))
+                       Booking.status.in_([BookStatus.PENDING, BookStatus.UNPAID,
+                                           BookStatus.PAID, BookStatus.FAILED_PAY])))
                 .order_by(Booking.date, Booking.time))
         result = await self.session.execute(stmt)
         bookings = result.scalars().all()
@@ -55,8 +55,8 @@ class BookingRepos:
 
     async def count_bk(self) -> int:
         stmt = (select(func.count(Booking.id))
-                .where(Booking.status.in_([BookStatus.PENDING.value, BookStatus.UNPAID.value,
-                                           BookStatus.PAID.value, BookStatus.FAILED_PAY.value]))
+                .where(Booking.status.in_([BookStatus.PENDING, BookStatus.UNPAID,
+                                           BookStatus.PAID, BookStatus.FAILED_PAY]))
                 )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
@@ -64,8 +64,8 @@ class BookingRepos:
     async def get_bk_page(self, page: int) -> Booking:
 
         stmt = (select(Booking)
-                .where(Booking.status.in_([BookStatus.PENDING.value, BookStatus.UNPAID.value,
-                                                BookStatus.PAID.value, BookStatus.FAILED_PAY.value]))
+                .where(Booking.status.in_([BookStatus.PENDING, BookStatus.UNPAID,
+                                                BookStatus.PAID, BookStatus.FAILED_PAY]))
                 .order_by(Booking.id)
                 .limit(1)
                 .offset(page))
@@ -81,9 +81,9 @@ class BookingRepos:
             update(Booking)
                 .where(and_(Booking.user_id == us_id,
                             Booking.status.in_([
-                                BookStatus.UNPAID.value,
-                                BookStatus.PAID.value,
-                                BookStatus.FAILED_PAY.value]),
+                                BookStatus.UNPAID,
+                                BookStatus.PAID,
+                                BookStatus.FAILED_PAY]),
                             or_(
                                 Booking.date < threshold.date(),
                                 and_(

@@ -8,7 +8,7 @@ from yookassa import Configuration
 from app.ai.ai_intent import AIIntentService
 from app.service.embedding import EmbeddingService
 from app.core.conf import settings
-from app.database import async_session
+from app.database.async_engine import async_session
 from app.core.middlewares import AppMiddleware
 from app.core.routers import router
 from app.logs.logger import setup_logging

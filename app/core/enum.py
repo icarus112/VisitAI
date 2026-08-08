@@ -1,7 +1,7 @@
 from enum import Enum, StrEnum
 
 
-class BookStatus(Enum):
+class BookStatus(StrEnum):
     PENDING = "PENDING" #ожидание пока админ согласует
     CONFIRMED = "CONFIRMED" #администратор согласовал
     CANCELLED = "CANCELLED" # отменено
@@ -9,6 +9,7 @@ class BookStatus(Enum):
     NO_SHOW = "NO_SHOW" # клиент не пришел
 
 class PaymentMethod(StrEnum):
+    PENDING = "PENDING"
     ONLINE = "ONLINE"
     ON_SITE = "ON_SITE"
 

@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field, model_validator, field_validator, ConfigD
 
 class CatalogCreate(BaseModel):
     name: str = Field(..., max_length=127)
-    price: Decimal
-    duration: int
+    price: Decimal = Field(gt=0)
+    duration: int = Field(gt=0)
 
     description: str
     keywords: list[str] = Field(default_factory=list)
@@ -15,51 +15,30 @@ class CatalogCreate(BaseModel):
     def to_list(self) -> list:
         return [self.name, self.price, self.duration, self.description, self.keywords, self.client_phrases]
 
-    @field_validator("price")
-    def price_must_be_positive(cls, v: Decimal):
-        if v <= 0:
-            raise ValueError("Цена должна быть положительной")
-
-        return v
-
-    @field_validator("duration")
-    def duration_is_positive(cls, v: int):
-        if v < 0:
-            raise ValueError("продолжительность обслуживания должно быть положительным")
-
-        return v
-
     @field_validator("name")
     def name_not_empty(cls, v: str) -> str:
-        v = v.strip()
+        check = v.strip()
 
-        if not v:
+        if not check:
             raise ValueError("name can't be empty")
 
         return v
 
     @field_validator("description")
     def description_not_empty(cls, v: str) -> str:
-        v = v.strip()
+        check = v.strip()
 
-        if not v:
+        if not check:
             raise ValueError("description can't be empty")
 
         return v
 
     @field_validator("keywords")
     def keywords_not_empty(cls, v: str) -> str:
+        check = v.strip()
 
-        if not v:
+        if not check:
             raise ValueError("keywords can't be empty")
-
-        return v
-
-    @field_validator("client_phrases")
-    def client_phrases_not_empty(cls, v: str) -> str:
-
-        if not v:
-            raise ValueError("client_phrases can't be empty")
 
         return v
 

@@ -88,24 +88,30 @@ class Booking(Base):
         ForeignKey("catalogs.id"),
         nullable=False,
         index=True)
-    date: Mapped[date] = mapped_column(
-        Date ,
-        nullable=False)
-    time: Mapped[time] = mapped_column(
-        Time,
-        nullable=False)
+    scheduled_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False
+    )
     price: Mapped[Decimal] = mapped_column(
         (Numeric(8, 2)),
         nullable=False)
     status: Mapped[BookStatus] = mapped_column(
-        Enum(BookStatus),
-        default= enum.BookStatus.PENDING,
+        Enum(BookStatus,
+             name="book_status",
+             value_callable=lambda enum_class: [
+                 item.value for item in enum_class
+             ]),
         nullable=False)
     payment_method: Mapped[PaymentMethod] = mapped_column(
-        Enum(PaymentMethod),
+        Enum(PaymentMethod,
+             name="payment_status",
+             value_callable=lambda enum_class: [
+             item.value for item in enum_class
+             ]),
+        default=enum.PaymentStatus.UNPAID,
         nullable=False)
 
-    comment: Mapped[str] = mapped_column(
+    comment: Mapped[str | None] = mapped_column(
         Text,
         nullable=True)
 
@@ -123,13 +129,15 @@ class Booking(Base):
 
     # здесь добавил индексацию для некоторых полей для ускорения поиска
     __table_args__ = (
-        Index("idx_bk_us_id", "user_id"),
-        Index("idx_bk_ct_id", "catalog_id"),
-        Index("idx_bk_payment_id", "payment_attempts"),
+        Index(
+            "idx_bookings_catalog_scheduled_at",
+            "catalog_id",
+            "scheduled_at",
+        ),
     )
     def __repr__(self):
         return(f"<Booking: id={self.id}, catalog_id={self.catalog_id},"
-               f"user_id={self.user_id}, date={self.date}, time={self.time}>")
+               f"user_id={self.user_id}, date={self.scheduled_at.date()}, time={self.scheduled_at.time()}>")
 
 class Admin(Base):
     __tablename__ = "admins"
@@ -178,6 +186,10 @@ class PaymentAttempt(Base):
     )
     bookings = relationship(
         "Booking", back_populates="payment_attempts"
+    )
+
+    __table_args__ = (
+        Index("idx_payatt_bk_id", "booking_id"),
     )
 
     def __repr__(self):

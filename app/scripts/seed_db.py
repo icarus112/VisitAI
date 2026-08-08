@@ -12,8 +12,8 @@ from app.service.embedding import EmbeddingService
 from app.shemas.catalog import CatalogCreate, CatalogList
 from app.shemas.faq import FaqCreate, FaqList
 from app.shemas.record import BookingCreate, BookingList
-from app.database import async_session
-from app.database import User, Catalog, Booking
+from app.database.async_engine import async_session
+from app.database.models import User, Catalog, Booking
 
 async def has_any(model) -> bool:
     async with async_session() as session:

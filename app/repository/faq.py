@@ -1,7 +1,7 @@
 from sqlalchemy import func, select, desc, cast, Text
 
 from app.shemas.faq import FaqCreate
-from app.database import Faq
+from app.database.models import Faq
 
 
 class FAQRepos:

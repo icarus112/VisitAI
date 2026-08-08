@@ -11,26 +11,27 @@ class FaqCreate(BaseModel):
 
     @field_validator("question")
     def question_not_empty(cls, v: str) -> str:
-        v = v.strip()
+        check = v.strip()
 
-        if not v:
+        if not check:
             raise ValueError("question can't be empty")
 
         return v
 
     @field_validator("keywords")
     def keywords_not_empty(cls, v: str) -> str:
+        check = v.strip()
 
-        if not v:
+        if not check:
             raise ValueError("keywords can't be empty")
 
         return v
 
     @field_validator("answer")
     def answer_not_empty(cls, v: str) -> str:
-        v = v.strip()
+        check = v.strip()
 
-        if not v:
+        if not check:
             raise ValueError("answer can't be empty")
 
         return v

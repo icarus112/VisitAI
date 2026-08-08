@@ -8,7 +8,7 @@ from app.service.embedding import EmbeddingService
 from app.shemas.ai import AIIntentBooking
 from app.shemas.catalog import CatalogCreate, CatalogResponse
 
-from app.database import Catalog
+from app.database.models import Catalog
 
 logger = logging.getLogger(__name__)
 

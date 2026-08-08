@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
 from app.shemas.record import UserCreate
-from app.database import User
+from app.database.models import User
 
 
 class UserRepos:

@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import select, func, desc
 
 from app.shemas.catalog import CatalogCreate, CatalogResponse
-from app.database import Catalog
+from app.database.models import Catalog
 
 
 class CatalogRepos:

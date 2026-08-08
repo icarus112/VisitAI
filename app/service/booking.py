@@ -1,9 +1,9 @@
-import datetime
+from datetime import datetime, time, date
 import logging
 
 from app.shemas.record import BookingCreate, BookingRequestResult
-from app.database import Booking
-from app.core.enum import BookStatus
+from app.database.models import Booking
+from app.core.enum import BookStatus, PaymentMethod
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,8 @@ class BookingService:
         self.ct_rp = ct_rp
         self.ad_rp = ad_rp
 
-    def today(self) -> datetime.date:
-        return datetime.date.today()
+    def today(self) -> date:
+        return date.today()
 
     async def create_booking(self,
                              tg_id: int,
@@ -25,7 +25,7 @@ class BookingService:
                              comment: str) -> BookingRequestResult:
         user = await self.us_rp.get_by_tg_id(tg_id)
         ct = await self.ct_rp.get_ct_by_id(ct_id)
-        active_field = datetime.datetime.now()
+        active_field = datetime.now()
 
         if not user:
             logger.warning(f"user is not found for creating booking, user tg_id={tg_id}")
@@ -35,7 +35,7 @@ class BookingService:
             logger.warning(f"ct is not found for creating booking, ct id={ct_id}")
             raise ValueError("Услуга не найдена в sv")
 
-        if isinstance(date_str, datetime.date):#если date_str принадлежит к datetime.date
+        if isinstance(date_str, date):#если date_str принадлежит к datetime.date
             booking_date = date_str
         elif isinstance(date_str, str):#если date_str принадлежит к str
             booking_date = self.parse_date(date_str)
@@ -49,12 +49,15 @@ class BookingService:
                            f"date:{date_str}, time:{parsed_time}")
             raise ValueError("Дата и время не должно быть в прошлом времени")
 
+        scheduled_at = datetime.combine(booking_date, parsed_time)
+
         booking = BookingCreate(
             user_id=user.id,
             catalog_id=ct_id,
-            date=booking_date,
-            time=parsed_time,
-            status=BookStatus.PENDING,
+            scheduled_at=scheduled_at,
+            price=ct.price,
+            booking_status=BookStatus.PENDING,
+            payment_method=PaymentMethod.PENDING,
             comment=comment
         )
 
@@ -105,12 +108,12 @@ class BookingService:
 
         return bk, page, total
 
-    def parse_date(self, date_str: str) -> datetime.date:
+    def parse_date(self, date_str: str) -> date:
         wd = date_str.split(".")
         wd = [el for el in wd if el != ""]
 
-        month = datetime.date.today().month
-        year = datetime.date.today().year
+        month = date.today().month
+        year = date.today().year
 
         if len(wd) == 1:
             new_wd = f"{year}.{month}.{wd[0]}"
@@ -123,16 +126,16 @@ class BookingService:
             raise ValueError("Неверный формат даты в sv")
 
         try:
-            return datetime.datetime.strptime(new_wd, "%Y.%m.%d").date()
+            return datetime.strptime(new_wd, "%Y.%m.%d").date()
         except ValueError:
             logging.warning(f"can't parse date for creating booking , date_str= {date_str}")
             raise ValueError("Ошибка при переводе даты в sv")
 
-    def parse_time(self, time_str: str) -> datetime.time:
+    def parse_time(self, time_str: str) -> time:
         time_str = time_str.strip().replace(" ", ":")
 
         try:
-            return datetime.time.fromisoformat(time_str)
+            return time.fromisoformat(time_str)
         except ValueError:
             logger.warning(f"wrong time format for creating booking, time_str= {time_str}")
             raise
