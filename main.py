@@ -2,6 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 import logging
 
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.exceptions import TelegramNetworkError
 from yookassa import Configuration
 
@@ -82,7 +83,14 @@ async def safe_delete_webhook(bot: Bot, retries: int = 5, delay: int = 5):
 
 
 async def main():
-    bot = Bot(token=settings.tg_token.get_secret_value())
+
+    if settings.vpn_proxy:
+        session = AiohttpSession(proxy=settings.vpn_proxy)
+        bot = Bot(token=settings.tg_token.get_secret_value(),
+                  session=session)
+        print("Proxy enabled")
+    else:
+        bot = Bot(token=settings.tg_token.get_secret_value())
 
     dp=Dispatcher()
     em_sv = EmbeddingService( "intfloat/multilingual-e5-small",

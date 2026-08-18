@@ -24,7 +24,7 @@ class Requests(StatesGroup):
     get_comment = State()
     create_request = State()
 
-class RemovingBooking(StatesGroup):
+class CancelBooking(StatesGroup):
     ask_user = State()
 
 #===============================================================

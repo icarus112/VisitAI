@@ -7,6 +7,7 @@ class BookStatus(StrEnum):
     CANCELLED = "CANCELLED" # отменено
     COMPLETED = "COMPLETED" # услуга оказана
     NO_SHOW = "NO_SHOW" # клиент не пришел
+    REMOVED = "REMOVED" #удалена пользователем
 
 class PaymentMethod(StrEnum):
     PENDING = "PENDING"

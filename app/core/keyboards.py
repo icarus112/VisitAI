@@ -6,7 +6,7 @@ from app.database import Catalog, Booking
 main = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="👤Мои записи")],
     [KeyboardButton(text="✏️Добавить запись")],
-    [KeyboardButton(text="❗ Удалить"),
+    [KeyboardButton(text="❗ Отменить"),
     KeyboardButton(text="📂 Каталог услуг")],
     [KeyboardButton(text="🪪 Связаться с администратором")]],
     resize_keyboard=True,
@@ -194,8 +194,8 @@ async def bk_page_kb(bk: Booking,
 
     buttons.append(
         [InlineKeyboardButton(
-            text="🗑️ Удалить",
-            callback_data=f"remove:{bk.id}"
+            text="🗑️ Отменить",
+            callback_data=f"cancel:{bk.id}"
         )]
     )
 

@@ -3,8 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 import logging
 
-# from app.core import logger
-from app.core.states import CreateUserState, AiUserState, AIBookingCreate
+from app.core.states import AiUserState, AIBookingCreate
 from app.flows.users import continue_booking_flow, confirm_booking, start_user_registration, ai_create_bk, handle_faq
 from app.handlers.record import send_booking_request
 from app.service.admin import AdminService
@@ -15,7 +14,6 @@ from app.core import keyboards as kb
 from app.service.faq import FaqService
 from app.service.user import UserService
 from app.resources import phrases
-from app.shemas.ai import AIIntentBooking
 
 router = Router()
 logger = logging.getLogger(__name__)

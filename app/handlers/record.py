@@ -1,10 +1,10 @@
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, callback_query
+from aiogram.types import Message, CallbackQuery
 import logging
 
 from app.core import keyboards as kb
-from app.core.states import CreateUserState, Requests, AiUserState, RemovingBooking
+from app.core.states import CreateUserState, Requests, AiUserState, CancelBooking
 from app.flows.users import start_user_registration, send_bk_remove
 from app.resources import phrases
 from app.service.admin import AdminService
@@ -75,6 +75,7 @@ async def get_ct(message: Message,
     selected = bookings[0]
     await message.answer(f"Выбрана услуга: \n"
                          f"{selected.name} - {selected.price} руб / {selected.duration} мин")
+    await message.answer("на какую дату вы бы хотели записаться:", reply_markup=kb.get_date)
 
     await state.update_data(user_tg_id=message.from_user.id,
                             ct_id=selected.id,
@@ -261,8 +262,9 @@ async def without_pay(callback: CallbackQuery,
     await state.set_state(AiUserState.chatting)
 
 @router.callback_query(F.data == "accept_pay")
-async def with_pay(callback: CallbackQuery,
-                   )
+async def with_pay(callback: CallbackQuery
+                   ):
+    pass
 
 """=================================================================
                                МОИ ЗАПИСИ
@@ -382,14 +384,14 @@ async def ct_select(callback: CallbackQuery,
         await state.clear()
         await state.set_state(AiUserState.chatting)
 
-# "❗ Удалить"
+# "❗ Отменить"
 """=================================================================
-                               ❗ Удалить
+                               ❗ Отменить
 ====================================================================
 """
 
-@router.message(F.text == "❗ Удалить")
-async def remove_bk(message: Message,
+@router.message(F.text == "❗ Отменить")
+async def cancel_bk(message: Message,
                     state: FSMContext,
                     bk_sv: BookingService,
                     us_sv: UserService):
@@ -398,7 +400,6 @@ async def remove_bk(message: Message,
     user = await us_sv.get_by_tg_id(message.from_user.id)
 
     if user is None:
-        #  у юзера может не быть юзернейма
         name = message.from_user.username or message.from_user.first_name
         await state.update_data(suggested_name=name)
 
@@ -407,10 +408,12 @@ async def remove_bk(message: Message,
                              reply_markup=kb.authorization)
         await state.set_state(CreateUserState.ask_name)  # продолжение в файле handler/users.py
         return
+        #  у юзера может не быть юзернейма
+
 
     try:
 
-        bk, page, total = await bk_sv.page_data(page=0)
+        bk, page, total = await bk_sv.page_data(page=0, user_id=user.id)
 
         if bk is None:
             await message.answer("У вас нету записей")
@@ -432,7 +435,7 @@ async def remove_bk(message: Message,
 
     except Exception:
         logger.exception(
-            "Failed to open booking delete page: tg_id=%s user_id=%s text=%r",
+            "Failed to open booking page: tg_id=%s user_id=%s text=%r",
             user.tg_id,
             user.id,
             message.text
@@ -447,12 +450,13 @@ async def remove_bk(message: Message,
 @router.callback_query(F.data.startswith("bk_page:"))
 async def bk_nav_btn(callback: CallbackQuery,
                      bk_sv: BookingService,
+                     us_sv: UserService,
                      state: FSMContext):
     page = int(callback.data.split(":")[1])
-    user_id = callback.from_user.id
+    user = await us_sv.get_by_tg_id(callback.from_user.id)
 
     try:
-        bk, page, total = await bk_sv.page_data(page=page)
+        bk, page, total = await bk_sv.page_data(page=page, user_id=user.id)
 
         if bk is None:
             await callback.message.edit_text(
@@ -473,8 +477,8 @@ async def bk_nav_btn(callback: CallbackQuery,
 
     except Exception:
         logger.exception(
-            "Ошибка при удалени записей по записям: user_tg_id=%s data=%r",
-            user_id,
+            "Ошибка при отмене записей по записям: user_id=%s data=%r",
+            user.id,
             callback.data
         )
 
@@ -486,7 +490,7 @@ async def bk_nav_btn(callback: CallbackQuery,
         raise
 
 @router.callback_query(F.data.startswith("remove:"))
-async def ask_to_remove(callback: CallbackQuery,
+async def ask_to_cancel(callback: CallbackQuery,
                         state: FSMContext,
                         bk_sv: BookingService):
     await callback.message.edit_reply_markup(reply_markup=None)
@@ -504,18 +508,18 @@ async def ask_to_remove(callback: CallbackQuery,
 
         text = await bk_sv.page_text(bk)
         await callback.message.answer(
-            "Вы уверены что хотите удалить это запись?"
+            "Вы уверены что хотите отменить это запись?"
             f"\n\n{text}",
             reply_markup=kb.confirm_remove_bk
         )
 
         await state.update_data(bk_id=bk_id)
-        await state.set_state(RemovingBooking.ask_user)
+        await state.set_state(CancelBooking.ask_user)
 
     except Exception:
 
         logger.exception(
-            "Ошибка при удалени записей : user_tg_id=%s data=%r",
+            "Ошибка при отмене записей : user_tg_id=%s data=%r",
             callback.from_user.id,
             callback.data
         )
@@ -527,7 +531,7 @@ async def ask_to_remove(callback: CallbackQuery,
         )
         raise
 
-@router.callback_query(RemovingBooking.ask_user, F.data == "confirm_remove_bk")
+@router.callback_query(CancelBooking.ask_user, F.data == "confirm_remove_bk")
 async def removing_bk(callback: CallbackQuery,
                       state: FSMContext,
                       bk_sv: BookingService,
@@ -549,7 +553,7 @@ async def removing_bk(callback: CallbackQuery,
 
         if bk is None:
             await callback.message.answer("Такой записи не существует")
-            logger.warning("can't get bk from bk_id for removing: bk_id=%s, user_tg_id=%s",
+            logger.warning("can't get bk from bk_id for cancelling: bk_id=%s, user_tg_id=%s",
                            bk_id, callback.from_user.id)
             await state.set_state(AiUserState.chatting)
             return
@@ -558,11 +562,11 @@ async def removing_bk(callback: CallbackQuery,
                              bk_sv=bk_sv,
                              ad_sv=ad_sv,
                              bot=bot)
-        await callback.message.answer("Запись успешно удалена!")
+        await callback.message.answer("Запись успешно отменна!")
 
     except Exception:
         logger.exception(
-            "Ошибка при удалени записей : user_tg_id=%s data=%r",
+            "Ошибка при отмене записей : user_tg_id=%s data=%r",
             callback.from_user.id,
             callback.data
         )
@@ -574,7 +578,7 @@ async def removing_bk(callback: CallbackQuery,
         )
         raise
 
-@router.callback_query(RemovingBooking.ask_user, F.data == "cancel_remove_bk")
+@router.callback_query(CancelBooking.ask_user, F.data == "cancel_remove_bk")
 async def cancel_removing_bk(callback: CallbackQuery,
                       state: FSMContext):
     await callback.message.edit_reply_markup(reply_markup=None)

@@ -104,11 +104,11 @@ class Booking(Base):
         nullable=False)
     payment_method: Mapped[PaymentMethod] = mapped_column(
         Enum(PaymentMethod,
-             name="payment_status",
+             name="payment_method",
              value_callable=lambda enum_class: [
              item.value for item in enum_class
              ]),
-        default=enum.PaymentStatus.UNPAID,
+        default=enum.PaymentMethod.PENDING,
         nullable=False)
 
     comment: Mapped[str | None] = mapped_column(
@@ -184,7 +184,7 @@ class PaymentAttempt(Base):
         server_default=func.now(),
         nullable=False
     )
-    bookings = relationship(
+    booking = relationship(
         "Booking", back_populates="payment_attempts"
     )
 

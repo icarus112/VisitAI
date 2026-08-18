@@ -3,14 +3,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 import logging
 
-from app.ai.ai_intent import AIIntentService
 from app.core.states import AIBookingCreate, AiUserState, CreateUserState
 from app.resources import phrases
 from app.service.admin import AdminService
 from app.service.booking import BookingService
 from app.service.catalog import CatalogService
 from app.service.faq import FaqService
-from app.service.user import UserService
 from app.shemas.ai import AIIntentBooking
 from app.core import keyboards as kb
 logger = logging.getLogger(__name__)
@@ -224,8 +222,8 @@ async def send_booking_request(
         f"👤 Пользователь: {user.name}\n"
         f"📞 Номер телефона: {user.phone}\n"
         f"🧾 Услуга: {ct.name}\n"
-        f"📅 Дата: {booking.date.strftime('%d.%m.%Y')}\n"
-        f"⏰ Время: {booking.time.strftime('%H:%M')}\n"
+        f"📅 Дата: {booking.scheduled_at.date().strftime('%d.%m.%Y')}\n"
+        f"⏰ Время: {booking.scheduled_at.time().strftime('%H:%M')}\n"
         f"💬 Комментарий: {result.comment}"
     )
 

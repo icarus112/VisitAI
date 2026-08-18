@@ -75,7 +75,7 @@ async def confirm_ai_create_ct(
     await callback.message.edit_reply_markup(reply_markup=None)
 
     try:
-        catalog = await ct_sv.create_ct(name, price_str, duration_str, callback.from_user.id)
+        catalog = await ct_sv.create_ct(name, price_str, duration_str, callback.from_user.id, ai_res=None)
     except Exception:
         await callback.message.answer(f"❌ что то пошло не так при вводе данных", reply_markup=kb.admin)
         logger.exception(f"admin= {callback.from_user.id} can't create catalog")

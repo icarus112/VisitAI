@@ -58,7 +58,7 @@ class BookingCreate(BaseModel):
     catalog_id: int = Field(gt=0)
     scheduled_at: datetime
     price: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
-    booking_status: BookStatus = Field(default=BookStatus.PENDING)
+    status: BookStatus = Field(default=BookStatus.PENDING)
     payment_method: PaymentMethod = Field(default=PaymentMethod.PENDING)
     comment: str | None = None
 

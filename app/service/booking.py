@@ -20,7 +20,7 @@ class BookingService:
     async def create_booking(self,
                              tg_id: int,
                              ct_id: int,
-                             date_str: str | datetime.date,
+                             date_str: str | date,
                              time_str: str,
                              comment: str) -> BookingRequestResult:
         user = await self.us_rp.get_by_tg_id(tg_id)
@@ -44,19 +44,19 @@ class BookingService:
             raise ValueError("Неверный тип даты в sv")
         parsed_time = self.parse_time(time_str)
 
-        if booking_date < active_field.date() and parsed_time < active_field.time():
+        scheduled_at = datetime.combine(booking_date, parsed_time)
+
+        if scheduled_at <= active_field:
             logger.warning("booking is rejected cause of wrong date/time:"
                            f"date:{date_str}, time:{parsed_time}")
             raise ValueError("Дата и время не должно быть в прошлом времени")
-
-        scheduled_at = datetime.combine(booking_date, parsed_time)
 
         booking = BookingCreate(
             user_id=user.id,
             catalog_id=ct_id,
             scheduled_at=scheduled_at,
             price=ct.price,
-            booking_status=BookStatus.PENDING,
+            status=BookStatus.PENDING,
             payment_method=PaymentMethod.PENDING,
             comment=comment
         )
@@ -81,19 +81,19 @@ class BookingService:
                         ):
         try:
             ct = await self.ct_rp.get_ct_by_id(bk.catalog_id)
-            tran_status = await self.trans_pay_status(bk.status)
+            tran_status = self.translate_booking_status(bk.status)
         except Exception:
             logger.warning("error for bk_page_text")
             raise
 
         return (f"\nУслуга: {ct.name}"
-        f"\nДата: {bk.date.strftime('%Y.%m.%d')}"
-        f"\nВремя: {bk.time}"
+        f"\nДата: {bk.scheduled_at.date().strftime('%Y.%m.%d')}"
+        f"\nВремя: {bk.scheduled_at.time()}"
         f"\nСтатус: {tran_status}")
 
-    async def page_data(self, page: int):
+    async def page_data(self, page: int, user_id: int):
 
-        total = await self.bk_rp.count_bk()
+        total = await self.bk_rp.count_my_bk(user_id)
 
         if total == 0:
             return [], 0
@@ -104,7 +104,7 @@ class BookingService:
         if page >= total:
             page = total - 1
 
-        bk = await self.bk_rp.get_bk_page(page)
+        bk = await self.bk_rp.get_bk_page(page, user_id)
 
         return bk, page, total
 
@@ -214,39 +214,33 @@ class BookingService:
         else:
             for bk in my_bks:
                 ct = await self.ct_rp.get_ct_by_id(bk.catalog_id)
-                tran_status = await self.trans_pay_status(bk.status)
+                tran_status = self.translate_booking_status(bk.status)
                 lines.append("\n\n______________________________")
                 lines.append(f"\nУслуга: {ct.name}")
-                lines.append(f"Дата: {bk.date.strftime('%Y.%m.%d')}")
-                lines.append(f"Время: {bk.time}")
+                lines.append(f"Дата: {bk.scheduled_at.date().strftime('%Y.%m.%d')}")
+                lines.append(f"Время: {bk.scheduled_at.time().strftime('%H:%M')}")
                 lines.append(f"Статус: {tran_status}")
 
             text += "\n".join(lines)
             return text
 
-    async def trans_pay_status(self, status: BookStatus) -> str:
-        if status == BookStatus.PENDING:
-            return "Ожидание ответа"
-        elif status == BookStatus.UNPAID:
-            return "Принято, не оплачено"
-        elif status == BookStatus.PAID:
-            return "Принято, оплачено"
-        elif status == BookStatus.FAILED_PAY:
-            return "Ошибка при оплате"
-        else:
-            raise ValueError(f"Ошибка при переводе trans_pay_status для статуса: %s", status)
-            logger.warning("trans_pay_status failed for status: %s", status)
+    def translate_booking_status(self, status: BookStatus) -> str:
+        translations = {
+            BookStatus.PENDING: "Ожидает подтверждения",
+            BookStatus.CONFIRMED: "Запись подтверждена",
+            BookStatus.CANCELLED: "Запись отменена",
+            BookStatus.COMPLETED: "Услуга оказана",
+            BookStatus.NO_SHOW: "Клиент не пришёл",
+        }
 
-
-                    # id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
-                    # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-                    # catalog_id: Mapped[int] = mapped_column(ForeignKey("catalogs.id"), nullable=False)
-                    # date: Mapped[date] = mapped_column(Date, nullable=False)
-                    # time: Mapped[time] = mapped_column(Time, nullable=False)
-                    # status: Mapped[BookStatus] = mapped_column(Enum(BookStatus), default=enum.BookStatus.PENDING,
-                    #                                            nullable=False)
-                    # payment_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
-                    # comment: Mapped[str] = mapped_column(String(200))
-
-
+        try:
+            return translations[status]
+        except KeyError:
+            logger.warning(
+                "translate_booking_status failed for status: %s",
+                status,
+            )
+            raise ValueError(
+                f"Неизвестный статус бронирования: {status}"
+            )
 
