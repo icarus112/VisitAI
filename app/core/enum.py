@@ -22,7 +22,6 @@ class PaymentStatus(StrEnum):
     CANCELLED = "CANCELLED"
     REFUNDED = "REFUNDED" # возврат средств
 
-class Role(StrEnum):
+class AdminRole(StrEnum):
     SUPER_ADMIN = "SUPER_ADMIN"
     ADMIN = "ADMIN"
-    USER = "USER"

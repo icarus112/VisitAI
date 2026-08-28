@@ -88,7 +88,7 @@ async def set_admin(message: Message,
     data = await state.get_data()
     tg_id = data.get("tg_id")
     try:
-        await ad_sv.set_admin(name=name, tg_id=tg_id)
+        await ad_sv.create_admin(name=name, tg_id=tg_id)
     except Exception as e:
         await message.answer("Что-то пошло не так при попытке передать данные в систему")
         logger.exception(f"admin={name}, id= {message.from_user.id} failed to get admin rights, e={e}")

@@ -6,7 +6,7 @@ import logging
 from app.repository.catalog import CatalogRepos
 from app.service.embedding import EmbeddingService
 from app.shemas.ai import AIIntentBooking
-from app.shemas.catalog import CatalogCreate, CatalogResponse
+from app.shemas.catalog import CatalogCreate
 
 from app.database.models import Catalog
 
@@ -40,7 +40,7 @@ class CatalogService:
         return decimal_value.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
 
-    async def create_ct(self, name, price, duration, ad_tg_id, ai_res) -> CatalogResponse:
+    async def create_ct(self, name, price, duration, ad_tg_id, ai_res) -> Catalog:
         if not name:
             logger.warning("get ct_name None, can't create catalog")
             raise ValueError("Название не может быть пустым")

@@ -1,8 +1,7 @@
 from typing import List
-
 from sqlalchemy import select, func, desc
 
-from app.shemas.catalog import CatalogCreate, CatalogResponse
+from app.shemas.catalog import CatalogCreate
 from app.database.models import Catalog
 
 
@@ -10,16 +9,14 @@ class CatalogRepos:
     def __init__(self, session):
         self.session = session
 
-    async def create_ct(self, add_catalog: CatalogCreate, embedding: list[float]) -> CatalogResponse:
+    async def create_ct(self, add_catalog: CatalogCreate, embedding: list[float]) -> Catalog:
         catalog = Catalog(**add_catalog.model_dump(), embedding=embedding)
 
         self.session.add(catalog)
         await self.session.flush()
         await self.session.refresh(catalog)
 
-        result = CatalogResponse.model_validate(catalog)
-
-        return result
+        return catalog
 
     async def get_all(self) -> List[Catalog]:
         stmt = (select(Catalog).order_by(Catalog.id))

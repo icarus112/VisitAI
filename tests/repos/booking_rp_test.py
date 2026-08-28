@@ -91,6 +91,11 @@ async def test_count_bk(session_test: AsyncSession):
 
     count = await bk_rp.count_my_bk(user_id=user_1.id)
 
+    await session_test.refresh(booking_1)
+    await session_test.refresh(booking_2)
+    await session_test.refresh(booking_3)
+    await session_test.refresh(another_booking)
+
     assert (count == 2)
 
 @pytest.mark.asyncio(
@@ -122,6 +127,12 @@ async def test_get_bk_page(session_test: AsyncSession):
     bk_1 = await bk_rp.get_bk_page(page=1, user_id=user_1.id)
     another_bk_1 = await bk_rp.get_bk_page(page=0, user_id=user_2.id)
     none_booking = await bk_rp.get_bk_page(page=89, user_id=user_2.id)
+
+    await session_test.refresh(booking_1)
+    await session_test.refresh(booking_2)
+    await session_test.refresh(booking_3)
+    await session_test.refresh(another_booking_4)
+    await session_test.refresh(another_booking_5)
 
     assert bk_1.id == booking_1.id
     assert another_bk_1.id == another_booking_5.id

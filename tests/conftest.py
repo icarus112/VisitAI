@@ -8,7 +8,7 @@ from app.core.conf import settings
     loop_scope="session",
 )
 async def engine_test():
-    engine = create_async_engine(settings.database_url)
+    engine = create_async_engine(settings.database_test_url)
 
     yield engine
 

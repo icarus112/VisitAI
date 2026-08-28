@@ -1,5 +1,5 @@
 import logging
-from app.core.enum import Role
+from app.core.enum import AdminRole
 from app.core.conf import settings
 from app.database.models import Admin
 
@@ -18,8 +18,8 @@ class AdminService:
     async def is_admin(self, tg_id: int) -> bool:
         return self.ad_rp.is_admin(tg_id)
 
-    async def set_admin(self, tg_id, name: str) -> None:
-        await self.ad_rp.set_admin(tg_id, name)
+    async def create_admin(self, tg_id, name: str) -> None:
+        await self.ad_rp.create_admin(tg_id, name)
         logger.info(f"admin={name}, tg_id= {tg_id} get admin rights")
 
     async def get_ad_by_tg_id(self, tg_id: int) -> Admin | None:
@@ -36,12 +36,12 @@ class AdminService:
             logger.warning(f"can't get admin by id, [id={id}]")
             return None
 
-    async def change_role(self, tg_id: int, new_role: str) -> Role:
+    async def change_role(self, tg_id: int, new_role: str) -> AdminRole:
         if not settings.dev_mode:
             raise PermissionError("⛔ команда не доступна")
 
         try:
-            role = Role(new_role.upper())
+            role = AdminRole(new_role.upper())
         except Exception:
             raise ValueError("Такой роли нет")
 

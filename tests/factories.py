@@ -2,8 +2,10 @@ from datetime import datetime
 from decimal import Decimal
 from itertools import count
 
-from app.core.enum import BookStatus, PaymentMethod
-from app.database import User, Catalog, Booking
+from app.core.enum import BookStatus, PaymentMethod, AdminRole
+from app.database import User, Catalog, Booking, Admin
+from app.repository import booking
+
 
 class ModelFactory:
     _tg_id_counter = count(10000)
@@ -92,5 +94,22 @@ class ModelFactory:
         self.session.add(booking)
         await self.session.flush()
         return booking
+
+    async def create_admin(self,
+                           tg_id=None,
+                           name="smbd",
+                           role=AdminRole.ADMIN) -> Admin:
+        if tg_id is None:
+            tg_id = next(self._tg_id_counter)
+
+        admin = Admin(
+            tg_id=tg_id,
+            name=name,
+            role=role
+        )
+
+        self.session.add(admin)
+        await self.session.flush()
+        return admin
 
 

@@ -33,26 +33,17 @@ class CatalogCreate(BaseModel):
 
         return v
 
-    @field_validator("keywords")
-    def keywords_not_empty(cls, v: str) -> str:
-        check = v.strip()
-
-        if not check:
-            raise ValueError("keywords can't be empty")
-
-        return v
-
-class CatalogResponse(BaseModel):
-    id: int
-    name: str
-    price: Decimal
-    duration: int
-
-    description: str
-    keywords: list[str] = Field(default_factory=list)
-    client_phrases: list[str] = Field(default_factory=list)
-
-    model_config = ConfigDict(from_attributes=True)
+# class CatalogResponse(BaseModel):
+#     id: int
+#     name: str
+#     price: Decimal
+#     duration: int
+#
+#     description: str
+#     keywords: list[str] = Field(default_factory=list)
+#     client_phrases: list[str] = Field(default_factory=list)
+#
+#     model_config = ConfigDict(from_attributes=True)
 
 class CatalogList(BaseModel):
     item: list[CatalogCreate]

@@ -6,7 +6,7 @@ from sqlalchemy import String, Numeric, Time, Enum, ForeignKey, Date, BigInteger
 from pgvector.sqlalchemy import Vector
 
 from app.core import enum
-from app.core.enum import BookStatus, PaymentMethod, PaymentStatus
+from app.core.enum import BookStatus, PaymentMethod, PaymentStatus, AdminRole
 
 
 class Base(DeclarativeBase, AsyncAttrs):
@@ -142,10 +142,22 @@ class Booking(Base):
 class Admin(Base):
     __tablename__ = "admins"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    tg_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    role: Mapped[str] = mapped_column(String(40), default="admin")
+    id: Mapped[int] = mapped_column(
+        primary_key=True)
+    tg_id: Mapped[int] = mapped_column(
+        BigInteger,
+        nullable=False)
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False)
+    role: Mapped[AdminRole] = mapped_column(
+        Enum(AdminRole,
+             name="admin_role",
+             value_callable=lambda enum_class: [
+                 item.value for item in enum_class
+             ]),
+        default=enum.AdminRole.ADMIN,
+        nullable=False)
 
 class PaymentAttempt(Base):
     __tablename__ = "payment_attempts"
