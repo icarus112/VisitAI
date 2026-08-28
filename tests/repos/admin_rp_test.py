@@ -43,15 +43,12 @@ async def test_get_all_admin(session_test: AsyncSession):
     factory = ModelFactory(session_test)
     ad_rp = AdminRepos(session_test)
 
-    old_arr = await ad_rp.get_all_admin()
-
-
     admin_1 = await factory.create_admin(name="admin1")
     admin_2 = await factory.create_admin(name="admin2")
 
     arr = await ad_rp.get_all_admin()
-    assert len(arr) == len(old_arr) + 2
-    assert [arr[i].id for i in  range(len(old_arr), len(old_arr)+2)] == [admin_1.id, admin_2.id]
+    assert len(arr) == 2
+    assert [arr[i].id for i in  range(len(arr))] == [admin_1.id, admin_2.id]
 
 
 @pytest.mark.asyncio(
@@ -94,4 +91,5 @@ async def test_remove_admin(session_test: AsyncSession):
 
     assert is_removed is True
     assert none_admin is None
+
 

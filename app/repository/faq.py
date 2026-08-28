@@ -19,7 +19,6 @@ class FAQRepos:
         return faq
 
     async def find_answer(self, query: str) -> Faq:
-
         similarity = func.similarity(
             Faq.search_text,
             cast(query, Text) #явное приведение типа в нужный 
@@ -34,4 +33,3 @@ class FAQRepos:
 
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
-

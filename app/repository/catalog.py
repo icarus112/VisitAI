@@ -76,7 +76,7 @@ class CatalogRepos:
 
     async def embedding_search(self,
                                query_vector: list[float],
-                               limit: int = 5):
+                               limit: int = 5) -> list[tuple[Catalog, float]]:
         distance = Catalog.embedding.cosine_distance(query_vector).label("distance")
 
         stmt = (

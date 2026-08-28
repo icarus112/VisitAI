@@ -200,10 +200,6 @@ class PaymentAttempt(Base):
         "Booking", back_populates="payment_attempts"
     )
 
-    __table_args__ = (
-        Index("idx_payatt_bk_id", "booking_id"),
-    )
-
     def __repr__(self):
         return(f"<PayHistory: id={self.id}, booking_id={self.booking_id},"
                f"payed_at={self.paid_at}, amount={self.price}>")

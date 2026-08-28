@@ -18,15 +18,6 @@ class FaqCreate(BaseModel):
 
         return v
 
-    @field_validator("keywords")
-    def keywords_not_empty(cls, v: str) -> str:
-        check = v.strip()
-
-        if not check:
-            raise ValueError("keywords can't be empty")
-
-        return v
-
     @field_validator("answer")
     def answer_not_empty(cls, v: str) -> str:
         check = v.strip()
