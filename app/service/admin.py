@@ -16,7 +16,7 @@ class AdminService:
         return tg_id in settings.super_admins
 
     async def is_admin(self, tg_id: int) -> bool:
-        return self.ad_rp.is_admin(tg_id)
+        return await self.ad_rp.is_admin(tg_id)
 
     async def create_admin(self, tg_id, name: str) -> None:
         await self.ad_rp.create_admin(tg_id, name)
@@ -37,6 +37,10 @@ class AdminService:
             return None
 
     async def change_role(self, tg_id: int, new_role: str) -> AdminRole:
+        admin = await self.get_ad_by_tg_id(tg_id)
+        if admin is None:
+            raise ValueError("format_admin() expected Admin got None")
+
         if not settings.dev_mode:
             raise PermissionError("⛔ команда не доступна")
 
@@ -46,7 +50,7 @@ class AdminService:
             raise ValueError("Такой роли нет")
 
         await self.ad_rp.change_role(tg_id=tg_id,
-                                     new_role=role.value)
+                                     new_role=role)
 
         return role
 
@@ -54,16 +58,21 @@ class AdminService:
         admins = await self.ad_rp.get_all_admin()
         return admins
 
+    def format_admin(self, admin: Admin) -> str:
+        if admin is None:
+            raise ValueError("format_admin() expected Admin got None")
+
+        return (
+            f"👤 Имя: {admin.name}\n"
+            f"🆔 TG ID: {admin.tg_id}\n"
+            f"🪪 Должность: {admin.role}\n"
+        )
+
     async def get_info(self) -> str:
         text = "Список ваших сотрудников\n\n"
         admins = await self.get_all_admin()
-        lines = []
-        if admins is not None:
-            for admin in admins:
-                lines.append(f"👤 Имя: {admin.name}")
-                lines.append(f"🆔 TG ID: {admin.tg_id}")
-                lines.append(f"🪪 Должность: {admin.role}\n")
-
+        if admins:
+            lines = [self.format_admin(admin) for admin in admins]
             text += "<pre>\n" + "\n".join(lines) + "\n</pre>\n"
 
             return text
@@ -71,9 +80,11 @@ class AdminService:
         else:
             return "Список пуст, сотрудников нету"
 
-    async def remove_admin_by_id(self, id: int) -> None:
-        ad = await self.ad_rp.get_admin_by_id(id)
-        await self.ad_rp.remove_admin_by_id(id)
+    async def remove_admin_by_id(self, id: int) -> Admin | None:
+        admin = await self.ad_rp.remove_admin_by_id(id)
+        if admin is None:
+            logger.warning(f"can't get admin by admin_id={id} ")
+            return None
 
-        logger.info(f"admin={ad.name}, tg_id= {ad.tg_id} is removed")
-
+        logger.info(f"admin_id={id} is removed")
+        return admin

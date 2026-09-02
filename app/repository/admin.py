@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from app.core.enum import AdminRole
 from app.database.models import Admin
@@ -51,21 +51,20 @@ class AdminRepos:
         admins = results.scalars().all()
         return admins
 
-    async def change_role(self, tg_id: int, new_role: AdminRole) -> Admin:
-        admin = await self.get_ad_by_tg_id(tg_id)
+    async def change_role(self, tg_id: int, new_role: AdminRole) -> Admin | None:
+        stmt = (update(Admin)
+                .where(Admin.tg_id == tg_id)
+                .values(role=new_role)
+                .returning(Admin))
 
-        if admin:
-            admin.role = new_role
-        else:
-            raise ValueError(f"cant get admin by tg_id for change_role admin, ad_tg_id= {tg_id}")
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
-        return admin
-
-    async def remove_admin_by_id(self, id: int) -> bool:
+    async def remove_admin_by_id(self, id: int) -> Admin | None:
         admin = await self.get_ad_by_id(id)
 
         if admin is None:
-            raise ValueError (f"cant get admin by id for removing admin, ad_id= {id}")
+            return None
 
         await self.session.delete(admin)
-        return True
+        return admin

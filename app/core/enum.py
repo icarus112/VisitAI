@@ -25,3 +25,4 @@ class PaymentStatus(StrEnum):
 class AdminRole(StrEnum):
     SUPER_ADMIN = "SUPER_ADMIN"
     ADMIN = "ADMIN"
+    USER = "USER"

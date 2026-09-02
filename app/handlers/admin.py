@@ -8,6 +8,7 @@ from app.ai.ai_intent import AIIntentService
 from app.core import keyboards as kb
 from app.core.states import AdminState, CatalogSetState, AiAdminState
 from app.core.filtres import IsSuperAdmin, IsAdmin
+from app.database import Admin
 from app.service.admin import AdminService
 from app.service.catalog import CatalogService
 
@@ -189,25 +190,22 @@ async def delete_admin(callback: CallbackQuery,
 
     admin_id = int(callback.data.split(":")[1].strip())
 
-    selected =await ad_sv.get_ad_by_id(admin_id)
+    try:
+        selected = await ad_sv.remove_admin_by_id(admin_id)
+    except Exception:
+        await callback.message.answer("произошла ошибка при попытки удалении сотрудника")
+        logger.exception(f"admin id= {admin_id} failed to remove admin")
+        await state.set_state(AiAdminState.chatting)
+        return
+
+
     if selected is None:
         await callback.message.answer("не получилось найти такого сотрудника", reply_markup=kb.admin)
         logger.exception(f"admin id= {admin_id} can't get admin for removing admin")
         await state.set_state(AiAdminState.chatting)
         return
 
-    else:
-        await callback.message.answer(f"Вы выбрали:\nname:{selected.name}\ntg_id:{selected.tg_id}")
-
-        try:
-            await ad_sv.remove_admin_by_id(admin_id)
-        except Exception as e:
-            await callback.message.answer("произошла ошибка при попытки удалении сотрудника")
-            logger.exception(f"admin id= {admin_id} failed to remove admin")
-            await state.set_state(AiAdminState.chatting)
-            return
-
-        await callback.message.answer("Сотрудник успешно удален", reply_markup=kb.admin)
-        await state.set_state(AiAdminState.chatting)
-        return
+    await callback.message.answer(f"Сотрудник {selected.name} with id {selected.id} успешно удален", reply_markup=kb.admin)
+    await state.set_state(AiAdminState.chatting)
+    return
 

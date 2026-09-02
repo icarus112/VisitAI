@@ -83,13 +83,13 @@ async def test_remove_admin(session_test: AsyncSession):
     admin_1 = await factory.create_admin(name="admin1")
     await session_test.flush()
 
-    is_removed = await ad_rp.remove_admin_by_id(admin_1.id)
+    removed_admin = await ad_rp.remove_admin_by_id(admin_1.id)
 
     await session_test.flush()
 
-    none_admin = await ad_rp.get_ad_by_id(admin_1.id)
+    none_admin = await ad_rp.get_ad_by_id(removed_admin.id)
 
-    assert is_removed is True
+    assert removed_admin.id == admin_1.id
     assert none_admin is None
 
 
