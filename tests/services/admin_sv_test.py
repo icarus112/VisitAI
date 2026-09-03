@@ -131,6 +131,3 @@ async def test_remove_admin_success(session_test: AsyncSession):
 
     assert result.id == admin_1.id
     repo.remove_admin_by_id.assert_awaited_once_with(admin_1.id)
-
-
-

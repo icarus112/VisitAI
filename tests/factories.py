@@ -71,7 +71,7 @@ class ModelFactory:
                              price=Decimal('300'),
                              status=BookStatus.CONFIRMED,
                              payment_method=PaymentMethod.ONLINE,
-                             ) -> Booking:
+                             comment=None) -> Booking:
 
         if user is None:
             user = await self.create_user()
@@ -82,13 +82,17 @@ class ModelFactory:
         if scheduled_at is None:
             scheduled_at = datetime.now()
 
+        if comment is None:
+            comment = "comment"
+
         booking = Booking(
             user_id=user.id,
             catalog_id=catalog.id,
             scheduled_at=scheduled_at,
             price=price,
             status=status,
-            payment_method=payment_method
+            payment_method=payment_method,
+            comment=comment
         )
 
         self.session.add(booking)

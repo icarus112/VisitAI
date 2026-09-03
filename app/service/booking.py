@@ -20,7 +20,7 @@ class BookingService:
     async def create_booking(self,
                              tg_id: int,
                              ct_id: int,
-                             date_str: str | date,
+                             date_str: str,
                              time_str: str,
                              comment: str) -> BookingRequestResult:
         user = await self.us_rp.get_by_tg_id(tg_id)
