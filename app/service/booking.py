@@ -141,10 +141,8 @@ class BookingService:
             raise
 
     async def get_booking(self, booking_id: int) -> Booking | None:
-
         try:
             booking = await self.bk_rp.get_booking(booking_id)
-
         except Exception:
             logger.exception(
                 f"Failed to get booking "
@@ -163,7 +161,6 @@ class BookingService:
     async def get_full_bk(self, bk_id: int) -> Booking | None:
         try:
             full_bk = await self.bk_rp.get_full_bk(bk_id)
-
         except Exception:
             logger.exception(
                 f"Failed to get booking "
@@ -180,11 +177,10 @@ class BookingService:
         return full_bk
 
     async def cancel_pay(self, booking_id: int):
-        booking = await self.bk_rp.get_booking(booking_id)
-
-        if booking is None:
-            raise ValueError(f"Booking {booking_id} not found")
-
+        # booking = await self.bk_rp.get_booking(booking_id)
+        #
+        # if booking is None:
+        #     raise ValueError(f"Booking {booking_id} not found")
         rowcount = await self.bk_rp.cancel_pay(booking_id)
 
         if rowcount == 0:
@@ -194,14 +190,19 @@ class BookingService:
             "booking received without online payment, booking_id=%s",
             booking_id,
         )
+        return True
 
-    async def remove_bk(self, bk_id: int) -> None:
-        bk = await self.bk_rp.get_booking(bk_id)
+    async def remove_bk(self, bk_id: int) -> int:
+        rowcount = await self.bk_rp.remove_bk(bk_id)
 
-        if bk is None:
-            raise ValueError(f"Booking {bk_id} not found")
+        if rowcount == 0:
+            raise RuntimeError(f"Booking {bk_id} was not updated for removing")
 
-        return await self.bk_rp.remove_bk(bk_id)
+        logger.info(
+            "booking requested for removing, booking_id=%s",
+            bk_id,
+        )
+        return rowcount
 
     async def my_bk_info(self, us_id: int) -> str:
         await self.bk_rp.auto_complete_old(us_id)
@@ -240,7 +241,7 @@ class BookingService:
                 "translate_booking_status failed for status: %s",
                 status,
             )
-            raise ValueError(
+            raise KeyError(
                 f"Неизвестный статус бронирования: {status}"
             )
 
