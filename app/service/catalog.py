@@ -17,7 +17,7 @@ class CatalogService:
         self.ct_rp = ct_rp
         self.em_sv = em_sv
 
-    async def str_to_decimal(self, value) -> Decimal:
+    def str_to_decimal(self, value) -> Decimal:
         if value is None:
             logger.warning("get value None, can't convert to Decimal")
             raise ValueError("Цена не может быть пустой")
@@ -49,7 +49,7 @@ class CatalogService:
             logger.warning("get ai_res None, can't create catalog")
             raise ValueError("Произашла ошибка при создании доп полей(descriptions and etc.)")
 
-        price = await self.str_to_decimal(price)
+        price = self.str_to_decimal(price)
 
         try:
             duration = int(duration)
@@ -123,7 +123,7 @@ class CatalogService:
 
         return cts
 
-    async def embedding_search(self, result: AIIntentBooking):
+    async def embedding_search(self, result: AIIntentBooking) -> list[Catalog]:
         name = result.catalog_query or ""
         keywords = result.search_keywords or []
 
@@ -138,7 +138,7 @@ class CatalogService:
         return results
 
     async def embedding_search_by_name(self, catalog_query: str):
-        name = catalog_query
+        name = catalog_query or ""
 
         if not name:
             return []

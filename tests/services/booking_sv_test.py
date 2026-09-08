@@ -87,7 +87,6 @@ def test_parse_time_success(bk_service, input_time, expected):
 
 @pytest.mark.asyncio
 async def test_create_booking_none_user(bk_service : BookingService):
-    bk_rp = AsyncMock(spec=BookingRepos)
     bk_service.us_rp.get_by_tg_id.return_value = None
 
     with pytest.raises(ValueError):
@@ -98,11 +97,10 @@ async def test_create_booking_none_user(bk_service : BookingService):
             time_str="time",
             comment="comment"
         )
-    bk_rp.create_booking.assert_not_awaited()
+    bk_service.bk_rp.create_booking.assert_not_awaited()
 
 @pytest.mark.asyncio
 async def test_create_booking_none_catalog(bk_service : BookingService):
-    bk_rp = AsyncMock(spec=BookingRepos)
     user = AsyncMock()
     bk_service.us_rp.get_by_tg_id.return_value = user
 
@@ -114,7 +112,7 @@ async def test_create_booking_none_catalog(bk_service : BookingService):
             time_str="time",
             comment="comment"
         )
-    bk_rp.create_booking.assert_not_awaited()
+    bk_service.bk_rp.create_booking.assert_not_awaited()
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("past_date, past_time", [
@@ -274,10 +272,10 @@ async def test_page_data_page_under_zero(bk_service: BookingService):
     bk_service.bk_rp.count_my_bk.return_value = total
     bk_service.bk_rp.get_bk_page.return_value = bk
 
-    result = await bk_service.page_data(page=1, user_id=9)
+    result = await bk_service.page_data(page=-3, user_id=9)
 
-    assert result == (bk, 1, 10)
-    bk_service.bk_rp.get_bk_page.assert_awaited_once_with(1, 9)
+    assert result == (bk, 0, 10)
+    bk_service.bk_rp.get_bk_page.assert_awaited_once_with(0, 9)
 
 @pytest.mark.asyncio()
 async def test_page_data_total_under_page(bk_service: BookingService):
@@ -302,7 +300,7 @@ async def test_get_booking_exception_error(bk_service: BookingService):
 async def test_get_booking_none_booking(bk_service: BookingService):
     bk_service.bk_rp.get_booking.return_value = None
 
-    booking = await bk_service.bk_rp.get_booking(2)
+    booking = await bk_service.get_booking(2)
 
     assert booking is None
 
@@ -312,7 +310,7 @@ async def test_get_booking_success(
     booking = Mock()
     bk_service.bk_rp.get_booking.return_value = booking
 
-    result = await bk_service.bk_rp.get_booking(2)
+    result = await bk_service.get_booking(2)
 
     assert result == booking
 
