@@ -1246,3 +1246,95 @@ sqlalchemy.exc.PendingRollbackError: This Session's transaction has been rolled 
 [SQL: INSERT INTO bookings (user_id, catalog_id, scheduled_at, price, status, payment_method, comment) VALUES ($1::BIGINT, $2::INTEGER, $3::TIMESTAMP WITH TIME ZONE, $4::NUMERIC(8, 2), $5::book_status, $6::payment_status, $7::VARCHAR) RETURNING bookings.id]
 [parameters: (1, 2, datetime.datetime(2026, 8, 15, 23, 0), Decimal('1450.00'), 'PENDING', 'PENDING', '-')]
 (Background on this error at: https://sqlalche.me/e/20/f405) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+2026-09-19 00:21:01,704 | ERROR | __main__ | Fatal error while running bot
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/python_socks/async_/asyncio/v2/_proxy.py", line 102, in _connect
+    stream = await connect_tcp(
+             ^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/python_socks/async_/asyncio/v2/_connect.py", line 19, in connect_tcp
+    reader, writer = await asyncio.open_connection(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/streams.py", line 48, in open_connection
+    transport, _ = await loop.create_connection(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1122, in create_connection
+    raise exceptions[0]
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1104, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1007, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 651, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 691, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed {address}')
+ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 2080)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp_socks/connector.py", line 78, in _wrap_create_connection
+    return await self._connect_via_proxy(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp_socks/connector.py", line 141, in _connect_via_proxy
+    stream = await proxy.connect(
+             ^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/python_socks/async_/asyncio/v2/_proxy.py", line 84, in connect
+    return await self._connect(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/python_socks/async_/asyncio/v2/_proxy.py", line 109, in _connect
+    raise ProxyConnectionError(
+python_socks._errors.ProxyConnectionError: [Errno 111] Couldn't connect to proxy 127.0.0.1:2080 [Connect call failed ('127.0.0.1', 2080)]
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/main.py", line 132, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/main.py", line 117, in main
+    await wait_tg(bot)
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/main.py", line 33, in wait_tg
+    me = await bot.get_me(request_timeout=60)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/client/bot.py", line 1803, in get_me
+    return await self(call, request_timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/client/bot.py", line 493, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/client/session/base.py", line 259, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiogram/client/session/aiohttp.py", line 167, in make_request
+    async with session.post(
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp/client.py", line 1521, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp/client.py", line 788, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp/client.py", line 742, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp/connector.py", line 672, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1251, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1592, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/icarus112/SharedUbuntuWin/python/projects/VisitAI/.venv/lib/python3.12/site-packages/aiohttp_socks/connector.py", line 85, in _wrap_create_connection
+    raise ProxyConnectionError(str(e)) from e
+aiohttp_socks._errors.ProxyConnectionError: [Errno 111] Couldn't connect to proxy 127.0.0.1:2080 [Connect call failed ('127.0.0.1', 2080)]

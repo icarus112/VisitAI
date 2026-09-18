@@ -1,7 +1,14 @@
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession, async_sessionmaker
-
+from freezegun import configure
 from app.core.conf import settings
+
+configure(
+    extend_ignore_list=[
+        "transformers",
+        "sentence_transformers",
+    ]
+)
 
 @pytest_asyncio.fixture(
     scope="session",
